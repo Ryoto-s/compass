@@ -1,24 +1,15 @@
-# README
+# The App Explanation
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This is the word book app that contains data and functions of it.
 
-Things you may want to cover:
+# How to build
+- clone repository
+`$ cd yourworkspace/`
+`$ git clone https://github.com/Ryoto-s/compas.git`
+`$ cd compas/`
 
-* Ruby version
+- build this app on docker
+`docker compose up -d`
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+- check if build success
+Go to `localhost:3000` and you'll see Rails start page
