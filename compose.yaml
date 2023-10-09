@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  web:
+    build: .
+    container_name: compas
+    # remove rails dependent file and build and start rails
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - .:/compas
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+  db:
+    # postgres16 latest at 9/Oct/2023
+    # alpine has lesser image size
+    # However, the App gets larger, performance of alipine gets worth. So change sufix if it gets worth
+    image: postgres:16-alpine
+    container_name: compas_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=compas
+      - POSTGRES_PASSWORD=compas-api
+      - POSTGRES_DB=compas
+    volumes:
+      # mount data to permanent preservation
+      - wordbook-data-store:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  wordbook-data-store:
