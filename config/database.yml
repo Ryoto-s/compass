@@ -15,9 +15,9 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  host: compas_db
-  username: compas
-  password: compas-api
+  host: compass_db
+  username: compass
+  password: compass-api
   timeout: 5000
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
@@ -25,13 +25,13 @@ default: &default
 
 development:
   <<: *default
-  database: compas_development
+  database: compass_development
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
   # When left blank, postgres will use the default role. This is
   # the same name as the operating system user running Rails.
-  #username: compas
+  #username: compass
 
   # The password associated with the postgres role (username).
   #password:
@@ -59,7 +59,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: compas_test
+  database: compass_test
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -83,6 +83,6 @@ test:
 #
 production:
   <<: *default
-  database: compas_production
-  username: compas
-  password: <%= ENV["COMPAS_DATABASE_PASSWORD"] %>
+  database: compass_production
+  username: compass
+  password: <%= ENV["COMPASS_DATABASE_PASSWORD"] %>
