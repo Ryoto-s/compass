@@ -270,8 +270,8 @@ DEPENDENCIES
   puma (>= 5.0)
   rack-cors
   rails (~> 7.1.0)
-  rubocop
-  solargraph
+  rubocop (~> 1.56.0)
+  solargraph (~> 0.49.0)
   tzinfo-data
 
 RUBY VERSION
