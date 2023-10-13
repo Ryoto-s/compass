@@ -15,15 +15,21 @@ We will add usage of this app later until the app developed enough.
 - clone repository
 
   `$ cd your_workspace/`
+
   `$ git clone https://github.com/Ryoto-s/compass.git`
+  
   `$ cd compass/`
 
 - build this app on docker
 
   set RAILS_MASTER_KEY to entrypoint.sh
+
   `$ docker compose build`
+
   `$ docker compose run web rails db:create`
+
   `$ docker compose run web rails db:migrate`
+  
   `$ docker compose up -d`
 
 - check if build success
