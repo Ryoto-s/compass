@@ -9,6 +9,9 @@ services:
       - .:/compass
     ports:
       - "3000:3000"
+    environment:
+      # set Rails Master Key Manually. I will check best practice later.
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
     depends_on:
       - db
 

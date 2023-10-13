@@ -6,7 +6,7 @@ ruby '3.2.2'
 gem 'rails', '~> 7.1.0'
 
 # Use postgresql as the database for Active Record
-gem 'pg', '~> 1.1'
+gem 'pg'
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
@@ -32,8 +32,11 @@ gem 'bootsnap', require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
+# User Anthentication
+gem 'devise'
+
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
-# gem "rack-cors"
+gem 'rack-cors'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -43,6 +46,4 @@ end
 group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
-  gem 'rubocop', require: false
-  gem 'solargraph'
 end
