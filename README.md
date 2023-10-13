@@ -20,6 +20,7 @@ We will add usage of this app later until the app developed enough.
   
   `$ cd compass/`
 
+
 - build this app on docker
 
   set RAILS_MASTER_KEY to entrypoint.sh
@@ -31,6 +32,7 @@ We will add usage of this app later until the app developed enough.
   `$ docker compose run web rails db:migrate`
   
   `$ docker compose up -d`
+
 
 - check if build success
   Go to `localhost:3000` and you'll see Rails start page
