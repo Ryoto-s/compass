@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+  web:
+    build: .
+    container_name: compass
+    # remove rails dependent file and build and start rails
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - .:/compass
+    ports:
+      - "3000:3000"
+    environment:
+      # set Rails Master Key Manually. I will check best practice later.
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+    depends_on:
+      - db
+
+  db:
+    # postgres16 latest at 9/Oct/2023
+    # alpine has lesser image size
+    # However, the App gets larger, performance of alipine gets worth. So change sufix if it gets worth
+    image: postgres:16-alpine
+    container_name: compass_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=compass
+      - POSTGRES_PASSWORD=compass-api
+      - POSTGRES_DB=compass
+    volumes:
+      # mount data to permanent preservation
+      - wordbook-data-store:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  wordbook-data-store:
