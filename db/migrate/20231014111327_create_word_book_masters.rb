@@ -7,7 +7,5 @@ class CreateWordBookMasters < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
-
-    add_index :word_book_masters, :user_id
   end
 end

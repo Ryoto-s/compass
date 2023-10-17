@@ -35,6 +35,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_14_113523) do
     t.boolean "result", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["learned_at"], name: "index_results_on_learned_at"
     t.index ["word_book_master_id"], name: "index_results_on_word_book_master_id"
   end
 
@@ -52,19 +53,25 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_14_113523) do
     t.boolean "status", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_tags_on_name"
   end
 
   create_table "users", force: :cascade do |t|
     t.bigint "account_id", null: false
-    t.string "last_name"
-    t.string "first_name"
-    t.string "phonetic"
-    t.datetime "date_of_birth"
+    t.string "first_name", null: false
+    t.string "sur_name", null: false
+    t.string "first_phonetic"
+    t.string "sur_phonetic"
+    t.date "date_of_birth", null: false
     t.string "sex"
-    t.boolean "status"
+    t.boolean "status", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_users_on_account_id"
+    t.index ["first_name"], name: "index_users_on_first_name"
+    t.index ["first_phonetic"], name: "index_users_on_first_phonetic"
+    t.index ["sur_name"], name: "index_users_on_sur_name"
+    t.index ["sur_phonetic"], name: "index_users_on_sur_phonetic"
   end
 
   create_table "word_book_masters", force: :cascade do |t|
@@ -83,6 +90,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_14_113523) do
     t.string "language"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["word"], name: "index_word_definitions_on_word"
     t.index ["word_book_master_id"], name: "index_word_definitions_on_word_book_master_id"
   end
 

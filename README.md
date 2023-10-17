@@ -27,9 +27,9 @@ We will add usage of this app later until the app developed enough.
 
   `$ docker compose build`
 
-  `$ docker compose run web rails db:create`
+  `$ docker compose exec web rails db:create`
 
-  `$ docker compose run web rails db:migrate`
+  `$ docker compose exec web rails db:migrate`
   
   `$ docker compose up -d`
 
