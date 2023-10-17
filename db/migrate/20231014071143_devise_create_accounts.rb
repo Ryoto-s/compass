@@ -26,7 +26,5 @@ class DeviseCreateAccounts < ActiveRecord::Migration[7.1]
 
     add_index :accounts, :email,                unique: true
     add_index :accounts, :reset_password_token, unique: true
-    # add_index :accounts, :confirmation_token,   unique: true
-    # add_index :accounts, :unlock_token,         unique: true
   end
 end
