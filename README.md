@@ -12,30 +12,62 @@ We will add usage of this app later until the app developed enough.
 
 # How to build(First set up)
 
-- clone repository
+## build this app on docker
 
-  `$ cd your_workspace/`
+- create `.env` file and copy values from `.env.sample` to `.env`
+- Commands for build the app.
+```
+$ docker compose build
 
-  `$ git clone https://github.com/Ryoto-s/compass.git`
-  
-  `$ cd compass/`
+$ docker compose exec web rails db:create
 
+$ docker compose exec web rails db:migrate
 
-- build this app on docker
-
-  set RAILS_MASTER_KEY to entrypoint.sh
-
-  `$ docker compose build`
-
-  `$ docker compose exec web rails db:create`
-
-  `$ docker compose exec web rails db:migrate`
-  
-  `$ docker compose up -d`
-
+$ docker compose up -d
+```
 
 - check if build success
-  Go to `localhost:3000` and you'll see Rails start page
+  `GET: localhost:3000/api/v1/health` and you'll see HTTP status.
+
+## Setup user
+
+- To sign up user, API request as follows
+
+  `POST localhost:3000/signup`
+
+  Body(json): `{"email":"test.user@example.com","password":"password"}}`
+
+  HEADER: `Content-Type` `application/json`
+
+- or command
+
+  ```
+  curl -X POST -H "Content-Type: application/json"\
+    -d '{"user":{"email":"test.user@example.com","password":"password"}}'\
+    localhost:3000/signup
+  ```
+
+- Then, the message 'Signed in successfully.' will be shown.
+
+## Login
+
+- API request as follows
+
+  `POST localhost:3000/login`
+
+  Body(json): `{"user": {"email":"test.user@example.com","password":"password"}}`
+
+  HEADER: `Content-Type` `application/json`
+
+- or command
+
+  ```
+  curl -X POST -H "Content-Type: application/json"\
+    -d '{"user":{"email":"test.user@example.com","password":"password"}}'\
+    -v localhost:3000/login
+  ```
+
+- Then, the message 'Logged in successfully.' will be shown. And the Bearer token will be attached in the header.
 
 # Other information
 
