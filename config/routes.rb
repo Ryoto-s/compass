@@ -14,7 +14,6 @@ Rails.application.routes.draw do
     namespace :v1 do
       get 'health', to: 'health#index'
       get '/current_user', to: 'current_user#index'
-      resources :mains
     end
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
