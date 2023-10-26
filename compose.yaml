@@ -3,15 +3,14 @@ services:
   web:
     build: .
     container_name: compass
+    restart: always
     # remove rails dependent file and build and start rails
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
     volumes:
       - .:/compass
     ports:
       - "3000:3000"
-    environment:
-      # set Rails Master Key Manually. I will check best practice later.
-      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+    env_file: .env
     depends_on:
       - db
 

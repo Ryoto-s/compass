@@ -14,7 +14,21 @@ Devise.setup do |config|
   # confirmation, reset password and unlock tokens in the database.
   # Devise will use the `secret_key_base` as its `secret_key`
   # by default. You can change it below and use your own secret key.
-  # config.secret_key = 'c06458b0a76ea01bb62bafdce4a8945d50fa54e6060ff0dff1595983f0c01394d2950aede9eb17fd6397213e52cd08995b9507c814a782acc240ab302d1e8460'
+
+  # jwt config
+  config.jwt do |jwt|
+    jwt.secret = ENV['SECRET_KEY_BASE']
+    # Rails.application.credentials.fetch(:secret_key_base)
+    jwt.dispatch_requests = [['POST', %r{^/login$}]]
+    jwt.revocation_requests = [['DELETE', %r{^/logout$}]]
+    jwt.expiration_time = 30.minutes.to_i
+  end
+
+  # Without this configuration, devise operation will fail because of sesion error.
+  config.warden do |warden|
+    warden.scope_defaults :user, store: false
+    warden.scope_defaults :admin, store: false
+  end
 
   # ==> Controller configuration
   # Configure the parent class to the devise controllers.
@@ -80,6 +94,7 @@ Devise.setup do |config|
   # The supported strategies are:
   # :database      = Support basic authentication with authentication key + password
   # config.http_authenticatable = false
+  config.http_authenticatable = [:database]
 
   # If 401 status code should be returned for AJAX requests. True by default.
   # config.http_authenticatable_on_xhr = true
@@ -97,7 +112,7 @@ Devise.setup do |config|
   # Notice that if you are skipping storage for all authentication paths, you
   # may want to disable generating routes to Devise's sessions controller by
   # passing skip: :sessions to `devise_for` in your config/routes.rb
-  config.skip_session_storage = [:http_auth]
+  config.skip_session_storage = %i[http_auth params_auth]
 
   # By default, Devise cleans up the CSRF token on authentication to
   # avoid CSRF token fixation attacks. This means that, when using AJAX
@@ -178,7 +193,7 @@ Devise.setup do |config|
 
   # ==> Configuration for :validatable
   # Range for password length.
-  config.password_length = 6..128
+  config.password_length = 8..30
 
   # Email regex used to validate email formats. It simply asserts that
   # one (and only one) @ exists in the given string. This is mainly
@@ -263,7 +278,7 @@ Devise.setup do |config|
   # should add them to the navigational formats lists.
   #
   # The "*/*" below is required to match Internet Explorer requests.
-  # config.navigational_formats = ['*/*', :html, :turbo_stream]
+  config.navigational_formats = []
 
   # The default HTTP method used to sign out a resource. Default is :delete.
   config.sign_out_via = :delete

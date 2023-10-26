@@ -10,23 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_14_113523) do
+ActiveRecord::Schema[7.1].define(version: 2023_10_19_031849) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "accounts", force: :cascade do |t|
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.integer "sign_in_count", default: 0, null: false
-    t.datetime "last_sign_in_at"
-    t.datetime "confirmed_at"
+  create_table "favourites", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "word_book_master_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_accounts_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_accounts_on_reset_password_token", unique: true
+    t.index ["user_id"], name: "index_favourites_on_user_id"
+    t.index ["word_book_master_id"], name: "index_favourites_on_word_book_master_id"
   end
 
   create_table "results", force: :cascade do |t|
@@ -56,8 +50,8 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_14_113523) do
     t.index ["name"], name: "index_tags_on_name"
   end
 
-  create_table "users", force: :cascade do |t|
-    t.bigint "account_id", null: false
+  create_table "user_defs", force: :cascade do |t|
+    t.bigint "user_id", null: false
     t.string "first_name", null: false
     t.string "sur_name", null: false
     t.string "first_phonetic"
@@ -67,11 +61,28 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_14_113523) do
     t.boolean "status", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["account_id"], name: "index_users_on_account_id"
-    t.index ["first_name"], name: "index_users_on_first_name"
-    t.index ["first_phonetic"], name: "index_users_on_first_phonetic"
-    t.index ["sur_name"], name: "index_users_on_sur_name"
-    t.index ["sur_phonetic"], name: "index_users_on_sur_phonetic"
+    t.index ["first_name"], name: "index_user_defs_on_first_name"
+    t.index ["first_phonetic"], name: "index_user_defs_on_first_phonetic"
+    t.index ["sur_name"], name: "index_user_defs_on_sur_name"
+    t.index ["sur_phonetic"], name: "index_user_defs_on_sur_phonetic"
+    t.index ["user_id"], name: "index_user_defs_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "last_sign_in_at"
+    t.datetime "confirmed_at"
+    t.string "jti", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["jti"], name: "index_users_on_jti", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   create_table "word_book_masters", force: :cascade do |t|
@@ -102,10 +113,12 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_14_113523) do
     t.index ["word_book_master_id"], name: "index_word_images_on_word_book_master_id"
   end
 
+  add_foreign_key "favourites", "users"
+  add_foreign_key "favourites", "word_book_masters"
   add_foreign_key "results", "word_book_masters"
   add_foreign_key "tag_references", "tags"
   add_foreign_key "tag_references", "word_book_masters"
-  add_foreign_key "users", "accounts"
+  add_foreign_key "user_defs", "users"
   add_foreign_key "word_book_masters", "users"
   add_foreign_key "word_definitions", "word_book_masters"
   add_foreign_key "word_images", "word_book_masters"

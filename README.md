@@ -12,30 +12,72 @@ We will add usage of this app later until the app developed enough.
 
 # How to build(First set up)
 
-- clone repository
+## build this app on docker
 
-  `$ cd your_workspace/`
+- Commands for setup secrets.
+```
+$ touch .env
 
-  `$ git clone https://github.com/Ryoto-s/compass.git`
-  
-  `$ cd compass/`
+$ EDITOR=vim bin/rails credentials:edit
+```
+- Then, save it and `master.key` will be created.
+- And add `RAILS_MASTER_KEY` and `SECRET_KEY_BASE` to .env
+  - `RAILS_MASTER_KEY` must be same as master.key
+  - `SECRET_KEY_BASE` is optional. Just enter any value.
 
+- You can build the app from now on.
+```
+$ docker compose build
 
-- build this app on docker
+$ docker compose exec web rails db:create
 
-  set RAILS_MASTER_KEY to entrypoint.sh
+$ docker compose exec web rails db:migrate
 
-  `$ docker compose build`
-
-  `$ docker compose exec web rails db:create`
-
-  `$ docker compose exec web rails db:migrate`
-  
-  `$ docker compose up -d`
-
+$ docker compose up -d
+```
 
 - check if build success
-  Go to `localhost:3000` and you'll see Rails start page
+  `GET: localhost:3000/api/v1/health` and you'll see HTTP status.
+
+## Setup user
+
+- To sign up user, API request as follows
+
+  `POST localhost:3000/signup`
+
+  Body(json): `{"email":"test.user@example.com","password":"password"}}`
+
+  HEADER: `Content-Type` `application/json`
+
+- or command
+
+  ```
+  curl -X POST -H "Content-Type: application/json"\
+    -d '{"user":{"email":"test.user@example.com","password":"password"}}'\
+    localhost:3000/signup
+  ```
+
+- Then, the message 'Signed in successfully.' will be shown.
+
+## Login
+
+- API request as follows
+
+  `POST localhost:3000/login`
+
+  Body(json): `{"user": {"email":"test.user@example.com","password":"password"}}`
+
+  HEADER: `Content-Type` `application/json`
+
+- or command
+
+  ```
+  curl -X POST -H "Content-Type: application/json"\
+    -d '{"user":{"email":"test.user@example.com","password":"password"}}'\
+    -v localhost:3000/login
+  ```
+
+- Then, the message 'Logged in successfully.' will be shown. And the Bearer token will be attached in the header.
 
 # Other information
 

@@ -1,3 +1,8 @@
 class User < ApplicationRecord
-  belongs_to :account
+  include Devise::JWT::RevocationStrategies::JTIMatcher
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable, :validatable, :rememberable, :recoverable,
+         :jwt_authenticatable, jwt_revocation_strategy: self
+  self.skip_session_storage = %i[http_auth params_auth]
 end
