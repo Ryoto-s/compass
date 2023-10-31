@@ -123,10 +123,10 @@ $ docker compose up -d
 ```
 curl -X POST -H "Content-Type: application/json"\
  -d\
- '{"word_book_master":{\
-    "use_image": true,"status": true\
-  },"word_definitions":{\
-    "word": "Ruby on Rails","answer": "A cool programming language for cool guys","language": "en"}\
+ '{"word_book_master":{
+    "use_image": true,"status": true
+  },"word_definitions":{
+    "word": "Ruby on Rails","answer": "A cool programming language for cool guys","language": "en"}
   }'\
  -H 'Authorization: Bearer ----Input issued token----'\
  localhost:3000/api/v1/word_books
