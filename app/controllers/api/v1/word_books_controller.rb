@@ -38,7 +38,7 @@ class Api::V1::WordBooksController < ApplicationController
   end
 
   def create
-    word_book_master = WordBookMaster.create!(master_params.merge(:user_id))
+    word_book_master = WordBookMaster.create!(master_params.merge(user_id:))
     WordDefinition.create!(definition_params.merge(word_book_master_id: word_book_master.id))
 
     render json: { created_word: word_book_master.as_json(
