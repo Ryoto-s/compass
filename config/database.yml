@@ -15,7 +15,7 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  host: localhost
+  host: compass_db
   username: compass
   password: compass-api
   timeout: 5000

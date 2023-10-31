@@ -1,6 +1,6 @@
 # compass
 
-A word book app for learning by rails API mode.
+A word book(Flashcard) app for learning by rails API mode.
 
 # The App Explanation
 
@@ -15,17 +15,21 @@ We will add usage of this app later until the app developed enough.
 ## build this app on docker
 
 - Commands for setup secrets.
+
 ```
 $ touch .env
 
 $ EDITOR=vim bin/rails credentials:edit
 ```
+
 - Then, save it and `master.key` will be created.
 - And add `RAILS_MASTER_KEY` and `SECRET_KEY_BASE` to .env
+
   - `RAILS_MASTER_KEY` must be same as master.key
   - `SECRET_KEY_BASE` is optional. Just enter any value.
 
 - You can build the app from now on.
+
 ```
 $ docker compose build
 
@@ -79,9 +83,49 @@ $ docker compose up -d
 
 - Then, the message 'Logged in successfully.' will be shown. And the Bearer token will be attached in the header.
 
+## Getting Ready! Let's create first card.
+
+- Create one by API request:
+
+  `POST localhost:3000/api/v1/word_books`
+
+  Body(json):
+  ```
+  {
+    "word_book_master": {
+      "use_image": true,
+      "status": true
+      },
+      "word_definitions": {
+        "word": "Ruby on Rails",
+        "answer": "A cool programming language for cool guys",
+        "language": "en" // optional
+      }
+  }
+  ```
+
+  HEADER: `Content-Type` `application/json`
+  
+  Authorization(Bearer): ----Input issued token----
+
+- or command
+
+```
+curl -X POST -H "Content-Type: application/json"\
+ -d\
+ '{"word_book_master":{\
+    "use_image": true,"status": true\
+  },"word_definitions":{\
+    "word": "Ruby on Rails","answer": "A cool programming language for cool guys","language": "en"}\
+  }'\
+ -H 'Authorization: Bearer ----Input issued token----'\
+ localhost:3000/api/v1/word_books
+```
+
 # Other information
 
 - Recommended Extensions on VSCode
-  - Ruby Solargraph
-  - ruby-rubocop
-  - Postman
+- Ruby Solargraph
+- ruby-rubocop
+- Postman
+```
