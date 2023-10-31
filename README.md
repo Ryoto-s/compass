@@ -135,6 +135,6 @@ curl -X POST -H "Content-Type: application/json"\
 # Other information
 
 - Recommended Extensions on VSCode
-- Ruby Solargraph
-- ruby-rubocop
-- Postman
+  - Ruby Solargraph
+  - ruby-rubocop
+  - Postman
