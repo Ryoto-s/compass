@@ -49,7 +49,12 @@ $ docker compose up -d
 
   `POST localhost:3000/signup`
 
-  Body(json): `{"email":"test.user@example.com","password":"password"}}`
+  Body(json):
+  ```
+  {"email":
+    "test.user@example.com","password":"password"}
+  }
+  ```
 
   HEADER: `Content-Type` `application/json`
 
@@ -69,7 +74,12 @@ $ docker compose up -d
 
   `POST localhost:3000/login`
 
-  Body(json): `{"user": {"email":"test.user@example.com","password":"password"}}`
+  Body(json):
+  ```
+  {"user":
+    {"email":"test.user@example.com","password":"password"}
+  }
+  ```
 
   HEADER: `Content-Type` `application/json`
 
@@ -125,7 +135,6 @@ curl -X POST -H "Content-Type: application/json"\
 # Other information
 
 - Recommended Extensions on VSCode
-- Ruby Solargraph
-- ruby-rubocop
-- Postman
-```
+  - Ruby Solargraph
+  - ruby-rubocop
+  - Postman
