@@ -19,6 +19,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_19_031849) do
     t.bigint "word_book_master_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_id", "word_book_master_id"], name: "index_favourites_on_user_id_and_word_book_master_id", unique: true
     t.index ["user_id"], name: "index_favourites_on_user_id"
     t.index ["word_book_master_id"], name: "index_favourites_on_word_book_master_id"
   end
@@ -30,6 +31,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_19_031849) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["learned_at"], name: "index_results_on_learned_at"
+    t.index ["word_book_master_id", "learned_at"], name: "index_results_on_word_book_master_id_and_learned_at", unique: true
     t.index ["word_book_master_id"], name: "index_results_on_word_book_master_id"
   end
 
@@ -39,6 +41,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_19_031849) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["tag_id"], name: "index_tag_references_on_tag_id"
+    t.index ["word_book_master_id", "tag_id"], name: "index_tag_references_on_word_book_master_id_and_tag_id", unique: true
     t.index ["word_book_master_id"], name: "index_tag_references_on_word_book_master_id"
   end
 
@@ -65,6 +68,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_19_031849) do
     t.index ["first_phonetic"], name: "index_user_defs_on_first_phonetic"
     t.index ["sur_name"], name: "index_user_defs_on_sur_name"
     t.index ["sur_phonetic"], name: "index_user_defs_on_sur_phonetic"
+    t.index ["user_id", "status"], name: "index_user_defs_on_user_id_and_status", unique: true
     t.index ["user_id"], name: "index_user_defs_on_user_id"
   end
 
@@ -102,7 +106,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_19_031849) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["word"], name: "index_word_definitions_on_word"
-    t.index ["word_book_master_id"], name: "index_word_definitions_on_word_book_master_id"
+    t.index ["word_book_master_id"], name: "index_word_definitions_on_word_book_master_id", unique: true
   end
 
   create_table "word_images", force: :cascade do |t|
@@ -110,7 +114,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_19_031849) do
     t.text "image_path", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["word_book_master_id"], name: "index_word_images_on_word_book_master_id"
+    t.index ["word_book_master_id"], name: "index_word_images_on_word_book_master_id", unique: true
   end
 
   add_foreign_key "favourites", "users"

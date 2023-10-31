@@ -6,5 +6,7 @@ class CreateTagReferences < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
+
+    add_index :tag_references, %i[word_book_master_id tag_id], unique: true
   end
 end

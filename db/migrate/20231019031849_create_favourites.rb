@@ -6,5 +6,7 @@ class CreateFavourites < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
+
+    add_index :favourites, %i[user_id word_book_master_id], unique: true
   end
 end

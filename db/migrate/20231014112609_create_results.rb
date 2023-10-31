@@ -9,5 +9,6 @@ class CreateResults < ActiveRecord::Migration[7.1]
     end
 
     add_index :results, :learned_at
+    add_index :results, %i[word_book_master_id learned_at], unique: true
   end
 end

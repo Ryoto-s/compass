@@ -10,6 +10,7 @@ WORKDIR /compass
 # Set environment
 ENV RAILS_ENV="development" \
     BUNDLE_PATH="/usr/local/bundle"
+ENV TZ Asia/Tokyo
 
 # Label the image
 LABEL name="compass" version="1.0.0"

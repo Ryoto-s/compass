@@ -17,5 +17,6 @@ class CreateUserDefs < ActiveRecord::Migration[7.1]
     add_index :user_defs, :first_name
     add_index :user_defs, :sur_phonetic
     add_index :user_defs, :first_phonetic
+    add_index :user_defs, %i[user_id status], unique: true
   end
 end
