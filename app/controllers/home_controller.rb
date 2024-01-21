@@ -4,21 +4,20 @@ class HomeController < ActionController::API
   def index
     user_id =
       JWT.decode(request.headers['Authorization'].split(' ')[1], ENV['SECRET_KEY_BASE']).first['sub']
-    @home = WordBookMaster.where(status: true, user_id:).limit(10)
-    response_data = @home.as_json(
+    home = FlashcardMaster.where(status: true, user_id:).limit(10)
+    response_data = home.as_json(
       only: %i[id user_id use_image status],
       include: {
-        word_definition: { only: %i[id word answer language] },
-        tag_reference: {
+        flashcard_definitions: { only: %i[id word answer language] },
+        tag_references: {
           include: {
             tag: { only: %i[id name status] }
           },
-          only: %i[id word_book_master_id tag_id]
+          only: %i[id flashcard_master_id tag_id]
         },
-        favourite: { only: %i[id user_id word_book_master_id] }
+        favourites: { only: %i[id user_id flashcard_master_id] }
       }
     )
     render json: response_data
   end
-
 end

@@ -28,8 +28,8 @@ services:
       - POSTGRES_DB=compass
     volumes:
       # mount data to permanent preservation
-      - wordbook-data-store:/var/lib/postgresql/data
+      - flashcard-data-store:/var/lib/postgresql/data
     restart: always
 
 volumes:
-  wordbook-data-store:
+  flashcard-data-store:

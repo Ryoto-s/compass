@@ -1,4 +1,4 @@
-Rails.application.routes.draw do
+Rails.application.routes.draw do # rubocop:disable Style/FrozenStringLiteralComment,Metrics/BlockLength
   # Authenticatable routes by devise
   root 'home#index', as: 'home'
 
@@ -15,7 +15,7 @@ Rails.application.routes.draw do
 
   namespace :api, format: 'json' do
     namespace :v1 do
-      resources :word_books, constraints: { id: Patterns::ID_PATTERN } do
+      resources :flashcards, constraints: { id: Patterns::ID_PATTERN } do
         member do
           get 'edit'
           get 'answer'

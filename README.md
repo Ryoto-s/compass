@@ -1,10 +1,10 @@
 # compass
 
-A word book(Flashcard) app for learning by rails API mode.
+A flashcard app for learning by rails API mode.
 
 # The App Explanation
 
-This is the word book app that contains data and functions of it.
+This is the flashcard app that contains data and functions of it.
 
 # Usage
 
@@ -52,7 +52,7 @@ $ docker compose up -d
   Body(json):
   ```
   {"email":
-    "test.user@example.com","password":"password"}
+    "test.user@example.com","password":"password"
   }
   ```
 
@@ -97,16 +97,16 @@ $ docker compose up -d
 
 - Create one by API request:
 
-  `POST localhost:3000/api/v1/word_books`
+  `POST localhost:3000/api/v1/flashcards`
 
   Body(json):
   ```
   {
-    "word_book_master": {
+    "flashcard_master": {
       "use_image": true,
       "status": true
       },
-      "word_definitions": {
+      "flashcard_definitions": {
         "word": "Ruby on Rails",
         "answer": "A cool programming language for cool guys",
         "language": "en" // optional
@@ -123,13 +123,13 @@ $ docker compose up -d
 ```
 curl -X POST -H "Content-Type: application/json"\
  -d\
- '{"word_book_master":{
+ '{"flashcard_master":{
     "use_image": true,"status": true
-  },"word_definitions":{
+  },"flashcard_definition":{
     "word": "Ruby on Rails","answer": "A cool programming language for cool guys","language": "en"}
   }'\
  -H 'Authorization: Bearer ----Input issued token----'\
- localhost:3000/api/v1/word_books
+ localhost:3000/api/v1/flashcards
 ```
 
 # Other information
