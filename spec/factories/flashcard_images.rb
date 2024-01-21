@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :word_image do
-    
+  factory :flashcard_image do
+
   end
 end

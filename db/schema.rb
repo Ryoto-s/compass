@@ -16,33 +16,61 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_19_031849) do
 
   create_table "favourites", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.bigint "word_book_master_id", null: false
+    t.bigint "flashcard_master_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id", "word_book_master_id"], name: "index_favourites_on_user_id_and_word_book_master_id", unique: true
+    t.index ["flashcard_master_id"], name: "index_favourites_on_flashcard_master_id"
+    t.index ["user_id", "flashcard_master_id"], name: "index_favourites_on_user_id_and_flashcard_master_id", unique: true
     t.index ["user_id"], name: "index_favourites_on_user_id"
-    t.index ["word_book_master_id"], name: "index_favourites_on_word_book_master_id"
+  end
+
+  create_table "flashcard_definitions", force: :cascade do |t|
+    t.bigint "flashcard_master_id", null: false
+    t.string "word", null: false
+    t.text "answer", null: false
+    t.string "language"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["flashcard_master_id"], name: "index_flashcard_definitions_on_flashcard_master_id", unique: true
+    t.index ["word"], name: "index_flashcard_definitions_on_word"
+  end
+
+  create_table "flashcard_images", force: :cascade do |t|
+    t.bigint "flashcard_master_id", null: false
+    t.text "image_path", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["flashcard_master_id"], name: "index_flashcard_images_on_flashcard_master_id", unique: true
+  end
+
+  create_table "flashcard_masters", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.boolean "use_image", null: false
+    t.boolean "status", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_flashcard_masters_on_user_id"
   end
 
   create_table "results", force: :cascade do |t|
-    t.bigint "word_book_master_id", null: false
+    t.bigint "flashcard_master_id", null: false
     t.datetime "learned_at", null: false
     t.boolean "result", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["flashcard_master_id", "learned_at"], name: "index_results_on_flashcard_master_id_and_learned_at", unique: true
+    t.index ["flashcard_master_id"], name: "index_results_on_flashcard_master_id"
     t.index ["learned_at"], name: "index_results_on_learned_at"
-    t.index ["word_book_master_id", "learned_at"], name: "index_results_on_word_book_master_id_and_learned_at", unique: true
-    t.index ["word_book_master_id"], name: "index_results_on_word_book_master_id"
   end
 
   create_table "tag_references", force: :cascade do |t|
-    t.bigint "word_book_master_id", null: false
+    t.bigint "flashcard_master_id", null: false
     t.bigint "tag_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["flashcard_master_id", "tag_id"], name: "index_tag_references_on_flashcard_master_id_and_tag_id", unique: true
+    t.index ["flashcard_master_id"], name: "index_tag_references_on_flashcard_master_id"
     t.index ["tag_id"], name: "index_tag_references_on_tag_id"
-    t.index ["word_book_master_id", "tag_id"], name: "index_tag_references_on_word_book_master_id_and_tag_id", unique: true
-    t.index ["word_book_master_id"], name: "index_tag_references_on_word_book_master_id"
   end
 
   create_table "tags", force: :cascade do |t|
@@ -89,41 +117,13 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_19_031849) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  create_table "word_book_masters", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.boolean "use_image", null: false
-    t.boolean "status", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_word_book_masters_on_user_id"
-  end
-
-  create_table "word_definitions", force: :cascade do |t|
-    t.bigint "word_book_master_id", null: false
-    t.string "word", null: false
-    t.text "answer", null: false
-    t.string "language"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["word"], name: "index_word_definitions_on_word"
-    t.index ["word_book_master_id"], name: "index_word_definitions_on_word_book_master_id", unique: true
-  end
-
-  create_table "word_images", force: :cascade do |t|
-    t.bigint "word_book_master_id", null: false
-    t.text "image_path", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["word_book_master_id"], name: "index_word_images_on_word_book_master_id", unique: true
-  end
-
+  add_foreign_key "favourites", "flashcard_masters"
   add_foreign_key "favourites", "users"
-  add_foreign_key "favourites", "word_book_masters"
-  add_foreign_key "results", "word_book_masters"
+  add_foreign_key "flashcard_definitions", "flashcard_masters"
+  add_foreign_key "flashcard_images", "flashcard_masters"
+  add_foreign_key "flashcard_masters", "users"
+  add_foreign_key "results", "flashcard_masters"
+  add_foreign_key "tag_references", "flashcard_masters"
   add_foreign_key "tag_references", "tags"
-  add_foreign_key "tag_references", "word_book_masters"
   add_foreign_key "user_defs", "users"
-  add_foreign_key "word_book_masters", "users"
-  add_foreign_key "word_definitions", "word_book_masters"
-  add_foreign_key "word_images", "word_book_masters"
 end

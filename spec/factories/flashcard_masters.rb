@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :word_book_master do
+  factory :flashcard_master do
     use_image { false }
     status { true }
     association :user
