@@ -1,6 +1,9 @@
-Rails.application.routes.draw do # rubocop:disable Style/FrozenStringLiteralComment,Metrics/BlockLength
+Rails.application.routes.draw do # rubocop:disable Layout/EndOfLine,Metrics/BlockLength
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   # Authenticatable routes by devise
   root 'home#index', as: 'home'
+  get '/new_home', to: 'home#new_index'
+  get '/:page', to: 'home#index_page'
 
   devise_for :users, path: '',
                      path_names: {
@@ -13,12 +16,11 @@ Rails.application.routes.draw do # rubocop:disable Style/FrozenStringLiteralComm
                        registrations: 'users/registrations'
                      }
 
-  namespace :api, format: 'json' do
-    namespace :v1 do
+  namespace :api, format: 'json' do # rubocop:disable Metrics/BlockLength
+    namespace :v1 do # rubocop:disable Metrics/BlockLength
       resources :flashcards, constraints: { id: Patterns::ID_PATTERN } do
         member do
           get 'edit'
-          get 'answer'
         end
         collection do
           get 'search'
@@ -29,12 +31,4 @@ Rails.application.routes.draw do # rubocop:disable Style/FrozenStringLiteralComm
       get 'current_user', to: 'current_user#index'
     end
   end
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get 'up' => 'rails/health#show', as: :rails_health_check
-
-  # Defines the root path route ("/")
-  # root "posts#index"
 end

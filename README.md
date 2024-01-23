@@ -23,8 +23,9 @@ $ EDITOR=vim bin/rails credentials:edit
 ```
 
 - Then, save it and `master.key` will be created.
-- And add `RAILS_MASTER_KEY` and `SECRET_KEY_BASE` to .env
+- And add `BASE_URL`, `RAILS_MASTER_KEY` and `SECRET_KEY_BASE` to .env
 
+  - `BASE_URL` is localhost:3000
   - `RAILS_MASTER_KEY` must be same as master.key
   - `SECRET_KEY_BASE` is optional. Just enter any value.
 
@@ -50,7 +51,7 @@ $ docker compose up -d
   `POST localhost:3000/signup`
 
   Body(json):
-  ```
+  ```json
   {"email":
     "test.user@example.com","password":"password"
   }
@@ -75,7 +76,7 @@ $ docker compose up -d
   `POST localhost:3000/login`
 
   Body(json):
-  ```
+  ```json
   {"user":
     {"email":"test.user@example.com","password":"password"}
   }
@@ -100,13 +101,14 @@ $ docker compose up -d
   `POST localhost:3000/api/v1/flashcards`
 
   Body(json):
-  ```
+  ```json
   {
     "flashcard_master": {
       "use_image": true,
+      "input_enabled": false,
       "status": true
       },
-      "flashcard_definitions": {
+      "flashcard_definition": {
         "word": "Ruby on Rails",
         "answer": "A cool programming language for cool guys",
         "language": "en" // optional
@@ -116,7 +118,7 @@ $ docker compose up -d
 
   HEADER: `Content-Type` `application/json`
   
-  Authorization(Bearer): ----Input issued token----
+  Authorization (Bearer): ----Input issued token----
 
 - or command
 
@@ -124,7 +126,7 @@ $ docker compose up -d
 curl -X POST -H "Content-Type: application/json"\
  -d\
  '{"flashcard_master":{
-    "use_image": true,"status": true
+    "use_image": true,"input_enabled":false,"status": true
   },"flashcard_definition":{
     "word": "Ruby on Rails","answer": "A cool programming language for cool guys","language": "en"}
   }'\

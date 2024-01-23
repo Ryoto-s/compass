@@ -1,23 +1,18 @@
 class HomeController < ActionController::API
   before_action :authenticate_user!
 
+  # All data included
   def index
-    user_id =
-      JWT.decode(request.headers['Authorization'].split(' ')[1], ENV['SECRET_KEY_BASE']).first['sub']
-    home = FlashcardMaster.where(status: true, user_id:).limit(10)
-    response_data = home.as_json(
-      only: %i[id user_id use_image status],
-      include: {
-        flashcard_definitions: { only: %i[id word answer language] },
-        tag_references: {
-          include: {
-            tag: { only: %i[id name status] }
-          },
-          only: %i[id flashcard_master_id tag_id]
-        },
-        favourites: { only: %i[id user_id flashcard_master_id] }
-      }
-    )
-    render json: response_data
+    home = FlashcardMaster.enabled.where(status: true, user_id: current_user.id)
+    if home.empty?
+      render json: { message: 'Data not set' }, status: :unprocessable_entity
+    else
+      # In this resource, the tag_reference will be shown even if tag is deleted.
+      # Try fix this in the future.
+      # response_data = FlashcardMasterResource.new(home).serialize
+      render json: { response_data: :home, status: :ok }
+      response_data = FlashcardMasterResource.new(home).serialize
+      render json: { response_data:, status: :ok }
+    end
   end
 end
