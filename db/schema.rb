@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_04_065051) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_31_145900) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -37,7 +37,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_04_065051) do
 
   create_table "flashcard_images", force: :cascade do |t|
     t.bigint "flashcard_master_id", null: false
-    t.text "image_path", null: false
+    t.text "image", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["flashcard_master_id"], name: "index_flashcard_images_on_flashcard_master_id", unique: true
@@ -50,6 +50,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_04_065051) do
     t.boolean "status", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "shared_flag", default: 0, null: false
     t.index ["user_id"], name: "index_flashcard_masters_on_user_id"
   end
 

@@ -2,47 +2,60 @@ class Api::V1::FlashcardsController < ApplicationController
   before_action :authenticate_user!
 
   def show
-    flashcard_master = FlashcardMaster.where(status: true, id: params[:id], user_id: current_user.id)
-    render json: flashcard_master.as_json(
-      only: %i[id user_id use_image],
-      include: { flashcard_definition: { only: %i[word answer language] } }
-    )
+    flashcard_master = find_flashcard_master
+    return unless flashcard_master
+
+    word = flashcard_master.flashcard_definition.word
+    render_flashcard_common(flashcard_master, :ok, "Flashcard found. ID: #{params[:id]}, word: #{word}")
   end
 
+  # Search for cards by access /api/v1/flashcards/search?q=foo+bar+anyString
   def search
-    # Search for cards by access /api/v1/flashcards/search?q=foo+bar+anyString
-    flashcard_master = search_keywords.map do |keyword|
-      FlashcardMaster.joins(:flashcard_definition).where(
-        'status = true AND user_id = ? AND ( word LIKE ? OR answer LIKE ? OR language LIKE ? )',
-        current_user.id, "%#{keyword}%", "%#{keyword}%", "%#{keyword}%"
-      )
+    keywords = search_keywords
+    # Reject if keyword is not specified
+    return render_flashcard_common([], :ok, 'No keywords provided') if keywords.blank?
+
+    flashcard_masters = keywords.map do |keyword|
+      FlashcardMaster.enabled.joins(:flashcard_definition).where(user_id: current_user.id)
+                     .where(
+                       'word LIKE ? OR answer LIKE ? OR language LIKE ?',
+                       "%#{keyword}%", "%#{keyword}%", "%#{keyword}%"
+                     )
     end.flatten.uniq
-    render json: { result: flashcard_master.as_json(
-      only: %i[id user_id use_image status],
-      include: { flashcard_definition: { only: %i[word answer language] } }
-    ) }
+    render_flashcard_common(flashcard_masters, :ok, "Found #{flashcard_masters.count} flashcards")
   end
 
+  # Search for cards by access /api/v1/flashcards/global_search?q=foo+bar+anyString
   def global_search
-    # Search for cards by access /api/v1/flashcards/global_search?q=foo+bar+anyString
-    flashcard_master = search_keywords.map do |keyword|
-      FlashcardMaster.joins(:flashcard_definition).where('status = true AND word LIKE ? OR answer LIKE ? OR language LIKE ?',
-                                                         "%#{keyword}%", "%#{keyword}%", "%#{keyword}%")
-    end.flatten.uniq
-    render json: { result: flashcard_master.as_json(
-      only: %i[id user_id use_image status],
-      include: { flashcard_definition: { only: %i[word answer language] } }
-    ) }
+    keywords = search_keywords
+    # Reject if keyword is not specified
+    return render_flashcard_common([], :ok, 'No keywords provided') if keywords.blank?
+
+    # Apply keywords for each parameters
+    condition_strings = keywords.each_with_index.map do |_keyword, index|
+      "(word LIKE :keyword#{index} OR answer LIKE :keyword#{index} OR language LIKE :keyword#{index})"
+    end.join(' OR ')
+    parameters = keywords.each_with_index.reduce({ user_id: current_user.id }) do |params, (keyword, index)|
+      params.merge!("keyword#{index}".to_sym => "%#{keyword}%")
+    end
+
+    flashcard_masters = FlashcardMaster.enabled.joins(:flashcard_definition)
+                                       .where(condition_strings, parameters)
+                                       .where('shared_flag = ? OR user_id = ?',
+                                              FlashcardMaster.shared_flags[:public_card], current_user.id)
+                                       .distinct
+
+    render_flashcard_common(flashcard_masters, :ok, "Found #{flashcard_masters.count} flashcards")
   end
 
   def create
-    flashcard_master = FlashcardMaster.create!(master_params.merge(user_id: current_user.id))
-    FlashcardDefinition.create!(definition_params.merge(flashcard_master_id: flashcard_master.id))
-
-    render json: JSON.pretty_generate({ created_card: flashcard_master.as_json(
-      only: %i[id user_id use_image status],
-      include: { flashcard_definition: { only: %i[word answer language] } }
-    ) }, status: :created)
+    ActiveRecord::Base.transaction do
+      flashcard_master = FlashcardMaster.create!(master_params.merge(user_id: current_user.id, status: true))
+      render json: JSON.pretty_generate({ flashcard_master: flashcard_master.as_json(
+        only: %i[id user_id use_image shared_flag status],
+        include: { flashcard_definition: { only: %i[id word answer language] } }
+      ) }), status: :created
+    end
   rescue ActiveRecord::RecordInvalid => e
     render json: { error: e.message }, status: :unprocessable_entity
   rescue StandardError => e
@@ -50,66 +63,120 @@ class Api::V1::FlashcardsController < ApplicationController
   end
 
   def edit
-    flashcard_definition = FlashcardDefinition.find(params[:id])
-    flashcard_master = FlashcardMaster.find(flashcard_definition.flashcard_master_id)
-    if flashcard_master.user_id != current_user.id
-      render json: JSON.pretty_generate(flashcard: 'Edit unauthorized', status: :unauthorized)
-    end
-    if flashcard_master.status == false
-      render json: JSON.pretty_generate(flashcard: 'Flashcard disabled', status: :unprocessable_entity)
-    else
-      render json: JSON.pretty_generate({ flashcard_definition: flashcard_definition.as_json(
-        only: %i[id flashcard_master_id word answer language]
-      ) }, status: :ok)
-    end
+    flashcard_master = find_flashcard_master
+    return unless flashcard_master
+
+    render_flashcard_common(flashcard_master, :ok, 'Flashcard for edit retrieved')
   end
 
   def update
-    flashcard_definition = FlashcardDefinition.find(params[:id])
-    flashcard_master = FlashcardMaster.find(flashcard_definition.flashcard_master_id)
-    if flashcard_master.user_id != current_user.id
-      render json: JSON.pretty_generate(flashcard: 'Edit unauthorized', status: :unauthorized)
+    flashcard_master = find_flashcard_master
+    return unless flashcard_master
+
+    ActiveRecord::Base.transaction do
+      flashcard_master.update!(master_params)
+      updated_word = flashcard_master.flashcard_definition.word
+      updated_message = "Flashcard successfully updated. ID: #{flashcard_master.id}, word: #{updated_word}"
+      render_flashcard_common(flashcard_master, :ok, updated_message)
     end
-    if flashcard_definition.update(definition_params)
-      flashcard_master = FlashcardMaster.find(flashcard_definition.flashcard_master_id)
-      render json: JSON.pretty_generate({ updated_content: flashcard_master.as_json(
-        only: %i[id status use_image],
-        include: { flashcard_definition: { only: %i[word answer language] } }
-      ) }, status: :ok)
-    else
-      render json: JSON.pretty_generate({ flashcard_definition: flashcard_definition.errors }, status: 500)
-    end
+  rescue ActiveRecord::RecordInvalid => e
+    render_error_response(e.message, :unprocessable_entity)
+  rescue StandardError => e
+    render_error_response(e.message, :internal_server_error)
   end
 
   def destroy
-    flashcard_master = FlashcardMaster.find(params[:id])
-    if flashcard_master.user_id != current_user.id
-      render json: JSON.pretty_generate(flashcard: 'Delete unauthorized', status: :unauthorized)
+    flashcard_master = find_flashcard_master
+    return unless flashcard_master
+
+    # Disabled flashcard would rejected above, but code this for security
+    unless flashcard_master.status == 'enabled'
+      return render_error_response(
+        "Flashcard already deleted. id: #{flashcard_master.id}, word: #{flashcard_master.flashcard_definition.word}", :ok
+      )
     end
-    if flashcard_master.update(status: false)
-      render json: JSON.pretty_generate(message: "successfully deleted flashcard_master_id: #{flashcard_master.id}",
-                                        status: :ok)
-    else
-      render json: JSON.pretty_generate(message: "deletion faild at flashcard_master_id #{flashcard_master.id}",
-                                        status: 500)
+
+    ActiveRecord::Base.transaction do
+      remove_image_previously_added(flashcard_master) if flashcard_master.flashcard_image.present?
+
+      flashcard_master.update(status: false)
+      render_deleted_flashcard(flashcard_master, :ok,
+                               "successfully deleted flashcard. ID: #{flashcard_master.id}, word: #{flashcard_master.flashcard_definition.word}")
+    rescue ActiveRecord::RecordInvalid => e
+      render_error_response(e.message, :unprocessable_entity)
+    rescue StandardError => e
+      render_error_response(e.message, :internal_server_error)
     end
   end
 
   private
 
-  def master_params
-    params.require(:flashcard_master).permit(:user_id, :use_image, :input_enabled, :status)
-  end
+  def find_flashcard_master
+    flashcard_master = FlashcardMaster.enabled.find_by(id: params[:id], user_id: current_user.id)
+    return unless render_inaccessible_entity(flashcard_master)
 
-  def definition_params
-    params.require(:flashcard_definition).permit(:word, :answer, :language)
+    flashcard_master
   end
 
   def search_keywords
     params = request.query_parameters
-    keywords = params['q'].split(/\s+/).reject(&:empty?)
+    return [] if params.blank?
+
+    keywords = params['q'].to_s.split(/\s+/).reject(&:empty?)
     keywords.map do |keyword|
       ActiveRecord::Base.sanitize_sql_like(keyword)
     end.flatten.uniq # remove duplicate of keywords
+  end
+
+  def remove_image_previously_added(flashcard_master)
+    flashcard_image = flashcard_master.flashcard_image
+    flashcard_image.remove_image!
+    flashcard_image.destroy
+  rescue ActiveRecord::RecordInvalid => e
+    render_error_response(e.message, :unprocessable_entity)
+  end
+
+  def render_inaccessible_entity(flashcard_master)
+    if flashcard_master.nil?
+      render json: JSON.pretty_generate({ flashcard: 'Not found' }), status: :not_found
+      return false
+    elsif flashcard_master.user_id != current_user.id
+      render json: JSON.pretty_generate(flashcard: 'Edit unauthorized'), status: :unauthorized
+      return false
+    elsif flashcard_master.status == 'disabled'
+      render json: JSON.pretty_generate(flashcard: 'Flashcard disabled'),
+             status: :unprocessable_entity
+      return false
+    end
+    true
+  end
+
+  def render_flashcard_common(flashcard_master, status, message)
+    render json: JSON.pretty_generate({ message:,
+                                        flashcard_master: flashcard_master.as_json(
+                                          only: %i[id user_id use_image input_enabled shared_flag status],
+                                          include: { flashcard_definition: { only: %i[id word answer language] },
+                                                     flashcard_image: { only: %i[image] } }
+                                        ) }), status:
+  end
+
+  def render_deleted_flashcard(flashcard_master, status, message)
+    render json: JSON.pretty_generate({
+                                        message:,
+                                        flashcard_master: flashcard_master.as_json(
+                                          only: %i[id user_id use_image],
+                                          include: { flashcard_definition: { only: %i[word] } }
+                                        )
+                                      }), status:
+  end
+
+  def render_error_response(message, status)
+    render json: JSON.pretty_generate({ error: message }), status:
+  end
+
+  def master_params
+    params.require(:flashcard_master)
+          .permit(:use_image, :input_enabled, :shared_flag, :status,
+                  flashcard_definition_attributes: %i[id word answer language _destroy])
   end
 end

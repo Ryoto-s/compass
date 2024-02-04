@@ -46,22 +46,9 @@ $ docker compose up -d
 
 ## Setup user
 
-- To sign up user, API request as follows
+- To sign up user, command as follows:
 
-  `POST localhost:3000/signup`
-
-  Body(json):
-  ```json
-  {"email":
-    "test.user@example.com","password":"password"
-  }
-  ```
-
-  HEADER: `Content-Type` `application/json`
-
-- or command
-
-  ```
+  ```bash
   curl -X POST -H "Content-Type: application/json"\
     -d '{"user":{"email":"test.user@example.com","password":"password"}}'\
     localhost:3000/signup
@@ -71,24 +58,11 @@ $ docker compose up -d
 
 ## Login
 
-- API request as follows
-
-  `POST localhost:3000/login`
-
-  Body(json):
-  ```json
-  {"user":
-    {"email":"test.user@example.com","password":"password"}
-  }
-  ```
-
-  HEADER: `Content-Type` `application/json`
-
-- or command
+- by command:
 
   ```
   curl -X POST -H "Content-Type: application/json"\
-    -d '{"user":{"email":"test.user@example.com","password":"password"}}'\
+    -d '{"user":{"email":"test.user@example.com","password":"password"} }'\
     -v localhost:3000/login
   ```
 
@@ -96,42 +70,90 @@ $ docker compose up -d
 
 ## Getting Ready! Let's create first card.
 
-- Create one by API request:
-
-  `POST localhost:3000/api/v1/flashcards`
-
-  Body(json):
-  ```json
-  {
-    "flashcard_master": {
-      "use_image": true,
-      "input_enabled": false,
-      "status": true
-      },
-      "flashcard_definition": {
-        "word": "Ruby on Rails",
-        "answer": "A cool programming language for cool guys",
-        "language": "en" // optional
-      }
-  }
-  ```
-
-  HEADER: `Content-Type` `application/json`
-  
-  Authorization (Bearer): ----Input issued token----
-
-- or command
+- Create one by command:
 
 ```
 curl -X POST -H "Content-Type: application/json"\
  -d\
  '{"flashcard_master":{
-    "use_image": true,"input_enabled":false,"status": true
-  },"flashcard_definition":{
-    "word": "Ruby on Rails","answer": "A cool programming language for cool guys","language": "en"}
-  }'\
- -H 'Authorization: Bearer ----Input issued token----'\
+    "use_image": true,"input_enabled":false,"shared_flag": "friends_only",
+    "flashcard_definition_attributes":{
+    "word": "Ruby on Rails","answer": "A cool programming language for cool guys","language": "en"
+    }
+  } }'\
+ -H "Authorization: Bearer ----Input issued token----"\
  localhost:3000/api/v1/flashcards
+```
+
+## Other operations for flashcard
+
+### Find out flashcard
+
+- by command
+
+```
+curl -X GET -H "Content-Type: application/json"\
+ -H "Authorization: Bearer ----Input issued token----"\
+ localhost:3000/api/v1/flashcards/1
+```
+
+- And then, data of flashcard will be shown in response
+
+### Update flashcard
+
+- At first, get flashcard data for edit
+
+```
+curl -X GET -H "Content-Type: application/json"\
+ -H "Authorization: Bearer ----Input issued token----"\
+ localhost:3000/api/v1/flashcards/1/edit
+```
+
+- And command for update with putting returned data:
+
+```
+curl -X PATCH -H "Content-Type: application/json"\
+ -H "Authorization: Bearer ----Input issued token----"\
+ localhost:3000/api/v1/flashcards/1\
+ -d\
+ '{"flashcard_master": {"id": 1,"user_id": 1,"use_image": false,"shared_flag": "private_card",
+    "flashcard_definition_attributes": {"id": 1,"word": "Changing flashcard","answer": "Updated Content","language": "ja"
+    } } }'
+```
+
+> [!IMPORTANT]
+> Don't forget to add `_attributes` after `flashcard_definition`
+
+### Delete flashcard(logical deletion)
+
+- To delete, just command:
+
+```
+curl -X DELETE -H "Content-Type: application/json"\
+ -H "Authorization: Bearer ----Input issued token----"\
+ localhost:3000/api/v1/flashcards/1
+```
+
+### Search for flashcards by keywords
+
+- Only flashcards created by you will be shown by:
+
+```
+curl -X GET -H "Content-Type: application/json"\
+ -H "Authorization: Bearer ----Input issued token----"\
+ localhost:3000/api/v1/flashcards/search?q=a+b
+```
+
+> [!NOTE]
+> Multiple search keywords can be specified, separated by '+'.
+> And search keywords is applied to words, answers, and languages
+
+- or including flashcard created and publicly shared by other users by:
+
+```
+curl -X GET -H "Content-Type: application/json"\
+ -H "Authorization: Bearer ----Input issued token----"\
+ localhost:3000/api/v1/flashcards/global_search?q=a+b
 ```
 
 # Other information
