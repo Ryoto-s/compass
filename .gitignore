@@ -31,3 +31,7 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# Ignore files and images folder
+/public/carrierwave_uploads/
+/public/uploads

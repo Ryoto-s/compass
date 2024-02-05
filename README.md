@@ -156,6 +156,17 @@ curl -X GET -H "Content-Type: application/json"\
  localhost:3000/api/v1/flashcards/global_search?q=a+b
 ```
 
+### Add image
+
+- Image can be added using a separate command from the flashcard creation command, as follows:
+
+```
+curl -X POST \
+ -H "Authorization: Bearer ----Input issued token----"\
+ -F "flashcard_image[image]=@path/to/image"
+ localhost:3000/api/v1/images/3/create
+```
+
 # Other information
 
 - Recommended Extensions on VSCode

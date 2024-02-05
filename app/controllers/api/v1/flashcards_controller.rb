@@ -1,6 +1,4 @@
-class Api::V1::FlashcardsController < ApplicationController
-  before_action :authenticate_user!
-
+class Api::V1::FlashcardsController < BaseController
   def show
     flashcard_master = find_flashcard_master
     return unless flashcard_master
@@ -56,10 +54,6 @@ class Api::V1::FlashcardsController < ApplicationController
         include: { flashcard_definition: { only: %i[id word answer language] } }
       ) }), status: :created
     end
-  rescue ActiveRecord::RecordInvalid => e
-    render json: { error: e.message }, status: :unprocessable_entity
-  rescue StandardError => e
-    render json: { error: e.message }, status: :internal_server_error
   end
 
   def edit
@@ -79,10 +73,6 @@ class Api::V1::FlashcardsController < ApplicationController
       updated_message = "Flashcard successfully updated. ID: #{flashcard_master.id}, word: #{updated_word}"
       render_flashcard_common(flashcard_master, :ok, updated_message)
     end
-  rescue ActiveRecord::RecordInvalid => e
-    render_error_response(e.message, :unprocessable_entity)
-  rescue StandardError => e
-    render_error_response(e.message, :internal_server_error)
   end
 
   def destroy
@@ -102,21 +92,10 @@ class Api::V1::FlashcardsController < ApplicationController
       flashcard_master.update(status: false)
       render_deleted_flashcard(flashcard_master, :ok,
                                "successfully deleted flashcard. ID: #{flashcard_master.id}, word: #{flashcard_master.flashcard_definition.word}")
-    rescue ActiveRecord::RecordInvalid => e
-      render_error_response(e.message, :unprocessable_entity)
-    rescue StandardError => e
-      render_error_response(e.message, :internal_server_error)
     end
   end
 
   private
-
-  def find_flashcard_master
-    flashcard_master = FlashcardMaster.enabled.find_by(id: params[:id], user_id: current_user.id)
-    return unless render_inaccessible_entity(flashcard_master)
-
-    flashcard_master
-  end
 
   def search_keywords
     params = request.query_parameters
@@ -136,21 +115,6 @@ class Api::V1::FlashcardsController < ApplicationController
     render_error_response(e.message, :unprocessable_entity)
   end
 
-  def render_inaccessible_entity(flashcard_master)
-    if flashcard_master.nil?
-      render json: JSON.pretty_generate({ flashcard: 'Not found' }), status: :not_found
-      return false
-    elsif flashcard_master.user_id != current_user.id
-      render json: JSON.pretty_generate(flashcard: 'Edit unauthorized'), status: :unauthorized
-      return false
-    elsif flashcard_master.status == 'disabled'
-      render json: JSON.pretty_generate(flashcard: 'Flashcard disabled'),
-             status: :unprocessable_entity
-      return false
-    end
-    true
-  end
-
   def render_flashcard_common(flashcard_master, status, message)
     render json: JSON.pretty_generate({ message:,
                                         flashcard_master: flashcard_master.as_json(
@@ -168,10 +132,6 @@ class Api::V1::FlashcardsController < ApplicationController
                                           include: { flashcard_definition: { only: %i[word] } }
                                         )
                                       }), status:
-  end
-
-  def render_error_response(message, status)
-    render json: JSON.pretty_generate({ error: message }), status:
   end
 
   def master_params

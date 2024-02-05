@@ -1,4 +1,4 @@
-class Api::V1::HealthController < ApplicationController
+class HealthController < ApplicationController
   def index
     status = response.status
     status_str = status.to_s

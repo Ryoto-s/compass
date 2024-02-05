@@ -3,7 +3,8 @@ Rails.application.routes.draw do # rubocop:disable Layout/EndOfLine,Metrics/Bloc
   # Authenticatable routes by devise
   root 'home#index', as: 'home'
   get '/new_home', to: 'home#new_index'
-  get '/:page', to: 'home#index_page'
+  get '/home/:page', to: 'home#index_page'
+  get 'health', to: 'health#index'
 
   devise_for :users, path: '',
                      path_names: {
@@ -27,8 +28,12 @@ Rails.application.routes.draw do # rubocop:disable Layout/EndOfLine,Metrics/Bloc
           get 'global_search'
         end
       end
-      get 'health', to: 'health#index'
       get 'current_user', to: 'current_user#index'
+      resources :images, only: %i[index update destroy], constraints: { id: Patterns::ID_PATTERN } do
+        member do
+          post 'create'
+        end
+      end
     end
   end
 end
