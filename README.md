@@ -14,7 +14,11 @@ We will add usage of this app later until the app developed enough.
 
 ## build this app on docker
 
-- Commands for setup secrets.
+- Setup database information.
+  - You can do this by creating a `config/database.yml` file.
+  - Sample configurations can be found in `config/database.sample.yml`. Copy these to `config/database.yml`.
+
+- Setup secrets.
 
 ```
 $ touch .env
@@ -24,7 +28,6 @@ $ EDITOR=vim bin/rails credentials:edit
 
 - Then, save it and `master.key` will be created.
 - And add `RAILS_MASTER_KEY` and `SECRET_KEY_BASE` to .env
-
   - `RAILS_MASTER_KEY` must be same as master.key
   - `SECRET_KEY_BASE` is optional. Just enter any value.
 
