@@ -14,7 +14,11 @@ We will add usage of this app later until the app developed enough.
 
 ## build this app on docker
 
-- Commands for setup secrets.
+- Setup database information.
+  - You can do this by creating a `config/database.yml` file.
+  - Sample configurations can be found in `config/database.sample.yml`. Copy these to `config/database.yml`.
+
+- Setup secrets.
 
 ```
 $ touch .env
@@ -84,6 +88,11 @@ curl -X POST -H "Content-Type: application/json"\
  -H "Authorization: Bearer ----Input issued token----"\
  localhost:3000/api/v1/flashcards
 ```
+
+> [!NOTE]
+> You can choose
+> - shared_flag from
+>   - 'public_card', 'friends_only', and 'private_card'
 
 ## Other operations for flashcard
 
@@ -156,7 +165,7 @@ curl -X GET -H "Content-Type: application/json"\
  localhost:3000/api/v1/flashcards/global_search?q=a+b
 ```
 
-### Add image
+### Operate images
 
 - Image can be added using a separate command from the flashcard creation command, as follows:
 
@@ -165,6 +174,53 @@ curl -X POST \
  -H "Authorization: Bearer ----Input issued token----"\
  -F "flashcard_image[image]=@path/to/image"
  localhost:3000/api/v1/images/3/create
+```
+
+> [!Important]
+> File format accepts only jpg, jpeg, png, webp, gif, and svg.
+
+- And to update image, just type like below:
+
+```
+curl -X PATCH \
+ -H "Authorization: Bearer ----Input issued token----"\
+ -F 
+ localhost:3000/api/v1/images/3
+```
+
+- Also image can be deleted by command as follows:
+
+```
+curl -X DELETE \
+ -H "Authorization: Bearer ----Input issued token----"\
+ localhost:3000/api/v1/images/3
+```
+
+### Answer to flashcard
+
+- There are two ways to answering flashcard depend on input_enabled value
+  - true: Compare input value and answer value
+  - false: Choose from 'correct', 'intermediate', 'incorrect', and 'not_sure' to mark answer status
+
+1. input enabled ver. command:
+
+```
+curl -X POST -H "Content-Type: application/json"\
+ -H "Authorization: Bearer ----Input issued token----"\
+ -d '{"answer": "input value of answer" }'\
+ localhost:3000/api/v1/results/1/create
+```
+
+> [!Tip]
+> Case and space be ignored in comparing answers
+
+2. Input disabled ver. command:
+
+```
+curl -X POST -H "Content-Type: application/json"\
+ -H "Authorization: Bearer ----Input issued token----"\
+ -d '{"results": {"result": "correct" } }'\
+ localhost:3000/api/v1/results/1/create
 ```
 
 # Other information

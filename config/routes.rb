@@ -17,8 +17,8 @@ Rails.application.routes.draw do # rubocop:disable Layout/EndOfLine,Metrics/Bloc
                        registrations: 'users/registrations'
                      }
 
-  namespace :api, format: 'json' do # rubocop:disable Metrics/BlockLength
-    namespace :v1 do # rubocop:disable Metrics/BlockLength
+  namespace :api, format: 'json' do
+    namespace :v1 do
       resources :flashcards, constraints: { id: Patterns::ID_PATTERN } do
         member do
           get 'edit'
@@ -29,14 +29,16 @@ Rails.application.routes.draw do # rubocop:disable Layout/EndOfLine,Metrics/Bloc
         end
       end
       get 'current_user', to: 'current_user#index'
-      resources :images, only: %i[index update destroy], constraints: { id: Patterns::ID_PATTERN } do
+      # The ImagesController identifies resources by the FlashcardMaster.
+      # IDs of the image must therefore be IDs of the FlashcardMaster.
+      resources :images, only: %i[update destroy], constraints: { id: Patterns::ID_PATTERN } do
         member do
           post 'create'
         end
       end
-      resources :results, only: %i[show update], constraints: { id: Patterns::ID_PATTERN } do
+      resources :results, only: %i[show], constraints: { id: Patterns::ID_PATTERN } do
         member do
-          post 'mark'
+          post 'create'
           get 'last_result'
         end
       end
