@@ -38,8 +38,8 @@ Rails.application.routes.draw do # rubocop:disable Layout/EndOfLine,Metrics/Bloc
       end
       resources :results, only: %i[show], constraints: { id: Patterns::ID_PATTERN } do
         member do
-          post 'create'
-          get 'last_result'
+          post 'answer'
+          get 'latest_result'
         end
       end
     end

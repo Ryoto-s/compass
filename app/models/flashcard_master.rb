@@ -10,4 +10,8 @@ class FlashcardMaster < ApplicationRecord
   accepts_nested_attributes_for :flashcard_definition, allow_destroy: true
   enum :status, { enabled: true, disabled: false }
   enum :shared_flag, { private_card: 0, friends_only: 1, public_card: 2 }
+
+  def latest_result
+    results.order(updated_at: :desc).first
+  end
 end

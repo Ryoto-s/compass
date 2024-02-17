@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_31_145900) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_17_175314) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -65,13 +65,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_31_145900) do
   create_table "results", force: :cascade do |t|
     t.bigint "flashcard_master_id", null: false
     t.bigint "user_id", null: false
-    t.datetime "learned_at", null: false
     t.integer "result", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["flashcard_master_id", "learned_at"], name: "index_results_on_flashcard_master_id_and_learned_at", unique: true
+    t.index ["flashcard_master_id", "result", "updated_at", "user_id"], name: "idx_on_flashcard_master_id_result_updated_at_user_i_60da5c37af", unique: true
     t.index ["flashcard_master_id"], name: "index_results_on_flashcard_master_id"
-    t.index ["learned_at"], name: "index_results_on_learned_at"
     t.index ["user_id"], name: "index_results_on_user_id"
   end
 

@@ -1,20 +1,34 @@
-# compass
+# compass <!-- omit in toc -->
 
 A flashcard app for learning by rails API mode.
 
-# The App Explanation
+# Table of Contents <!-- omit in toc -->
+- [1. The App Explanation](#1-the-app-explanation)
+- [2. Usage](#2-usage)
+- [3. How to build(First set up)](#3-how-to-buildfirst-set-up)
+  - [3.1. build this app on docker](#31-build-this-app-on-docker)
+  - [3.2. Setup user](#32-setup-user)
+  - [3.3. Login and issue token](#33-login-and-issue-token)
+- [4. Everything is Ready!](#4-everything-is-ready)
+  - [4.1. Let's create first card.](#41-lets-create-first-card)
+  - [4.2. Other operations for flashcard](#42-other-operations-for-flashcard)
+  - [4.3. Operate images](#43-operate-images)
+  - [4.4. Answer to flashcard](#44-answer-to-flashcard)
+
+# 1. The App Explanation
 
 This is the flashcard app that contains data and functions of it.
 
-# Usage
+# 2. Usage
 
 We will add usage of this app later until the app developed enough.
 
-# How to build(First set up)
+# 3. How to build(First set up)
 
-## build this app on docker
+## 3.1. build this app on docker
 
 - Setup database information.
+
   - You can do this by creating a `config/database.yml` file.
   - Sample configurations can be found in `config/database.sample.yml`. Copy these to `config/database.yml`.
 
@@ -48,19 +62,19 @@ $ docker compose up -d
 - check if build success
   `GET: localhost:3000/api/v1/health` and you'll see HTTP status.
 
-## Setup user
+## 3.2. Setup user
 
 - To sign up user, command as follows:
 
-  ```bash
+  ```
   curl -X POST -H "Content-Type: application/json"\
-    -d '{"user":{"email":"test.user@example.com","password":"password"}}'\
+    -d '{"user":{"email":"test.user@example.com","password":"password"} }'\
     localhost:3000/signup
   ```
 
 - Then, the message 'Signed in successfully.' will be shown.
 
-## Login
+## 3.3. Login and issue token
 
 - by command:
 
@@ -71,8 +85,10 @@ $ docker compose up -d
   ```
 
 - Then, the message 'Logged in successfully.' will be shown. And the Bearer token will be attached in the header.
+- Must use this issued token for other operations.
 
-## Getting Ready! Let's create first card.
+# 4. Everything is Ready!
+## 4.1. Let's create first card.
 
 - Create one by command:
 
@@ -90,11 +106,10 @@ curl -X POST -H "Content-Type: application/json"\
 ```
 
 > [!NOTE]
-> You can choose
-> - shared_flag from
->   - 'public_card', 'friends_only', and 'private_card'
+> You can choose shared_flag from
+> - 'public_card', 'friends_only', and 'private_card'
 
-## Other operations for flashcard
+## 4.2. Other operations for flashcard
 
 ### Find out flashcard
 
@@ -165,7 +180,7 @@ curl -X GET -H "Content-Type: application/json"\
  localhost:3000/api/v1/flashcards/global_search?q=a+b
 ```
 
-### Operate images
+## 4.3. Operate images
 
 - Image can be added using a separate command from the flashcard creation command, as follows:
 
@@ -177,14 +192,15 @@ curl -X POST \
 ```
 
 > [!Important]
-> File format accepts only jpg, jpeg, png, webp, gif, and svg.
+> Number in the URI must therefore be ID of the flashcard_master.
+> And file format accepts only jpg, jpeg, png, webp, gif, and svg.
 
 - And to update image, just type like below:
 
 ```
 curl -X PATCH \
  -H "Authorization: Bearer ----Input issued token----"\
- -F 
+ -F "flashcard_image[image]=@path/to/image"
  localhost:3000/api/v1/images/3
 ```
 
@@ -196,7 +212,7 @@ curl -X DELETE \
  localhost:3000/api/v1/images/3
 ```
 
-### Answer to flashcard
+## 4.4. Answer to flashcard
 
 - There are two ways to answering flashcard depend on input_enabled value
   - true: Compare input value and answer value
@@ -220,12 +236,16 @@ curl -X POST -H "Content-Type: application/json"\
 curl -X POST -H "Content-Type: application/json"\
  -H "Authorization: Bearer ----Input issued token----"\
  -d '{"results": {"result": "correct" } }'\
- localhost:3000/api/v1/results/1/create
+ localhost:3000/api/v1/results/1/answer
 ```
 
-# Other information
+> [!Important]
+> Number in the URI must therefore be ID of the flashcard_master.
 
-- Recommended Extensions on VSCode
-  - Ruby Solargraph
-  - ruby-rubocop
-  - Postman
+### Confirm latest answer status by:
+
+```
+curl -X GET -H "Content-Type: application/json"\
+ -H "Authorization: Bearer ----Input issued token----"\
+ localhost:3000/api/v1/results/1/latest_result
+```

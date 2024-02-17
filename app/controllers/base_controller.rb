@@ -30,7 +30,7 @@ class BaseController < ApplicationController
       render json: JSON.pretty_generate({ flashcard: 'Not found' }), status: :not_found
       return false
     elsif flashcard_master.user_id != current_user.id
-      render json: JSON.pretty_generate(flashcard: 'Edit unauthorized'), status: :unauthorized
+      render json: JSON.pretty_generate(flashcard: 'Access denied'), status: :forbidden
       return false
     elsif flashcard_master.status == 'disabled'
       render json: JSON.pretty_generate(flashcard: 'Flashcard disabled'),

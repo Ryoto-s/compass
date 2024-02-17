@@ -1,18 +1,31 @@
-class HomeController < ActionController::API
-  before_action :authenticate_user!
-
+class HomeController < BaseController
   # All data included
   def index
-    home = FlashcardMaster.enabled.where(status: true, user_id: current_user.id)
-    if home.empty?
-      render json: { message: 'Data not set' }, status: :unprocessable_entity
+    query_results = FlashcardMaster.enabled.where(user_id: current_user.id)
+    if query_results.empty?
+      render json: { message: "Data not set. UserID: #{current_user.id}" }
     else
-      # In this resource, the tag_reference will be shown even if tag is deleted.
-      # Try fix this in the future.
-      # response_data = FlashcardMasterResource.new(home).serialize
-      render json: { response_data: :home, status: :ok }
-      response_data = FlashcardMasterResource.new(home).serialize
-      render json: { response_data:, status: :ok }
+      flashcard_masters = query_results.map do |q|
+        {
+          id: q.id,
+          use_image: q.use_image,
+          shared_flag: q.shared_flag,
+          input_enabled: q.input_enabled,
+          flashcard_definition: {
+            id: q.flashcard_definition.id,
+            word: q.flashcard_definition.word,
+            answer: q.flashcard_definition.answer,
+            language: q.flashcard_definition.language
+          },
+          flashcard_image: {
+            image: q.flashcard_image.try(:image)
+          },
+          latest_result: q.latest_result.as_json(only: %i[result updated_at])
+        }
+      end
+
+      message = "Found #{flashcard_masters.size} flashcards for UserID: #{current_user.id}"
+      render json: JSON.pretty_generate({ message:, flashcard_masters: }), status: :ok
     end
   end
 end

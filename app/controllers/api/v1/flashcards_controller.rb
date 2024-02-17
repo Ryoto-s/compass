@@ -50,7 +50,7 @@ class Api::V1::FlashcardsController < BaseController
     ActiveRecord::Base.transaction do
       flashcard_master = FlashcardMaster.create!(master_params.merge(user_id: current_user.id, status: true))
       render json: JSON.pretty_generate({ flashcard_master: flashcard_master.as_json(
-        only: %i[id user_id use_image shared_flag status],
+        only: %i[id user_id use_image input_enabled shared_flag status],
         include: { flashcard_definition: { only: %i[id word answer language] } }
       ) }), status: :created
     end
