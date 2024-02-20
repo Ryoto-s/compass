@@ -107,14 +107,6 @@ class Api::V1::FlashcardsController < BaseController
     end.flatten.uniq # remove duplicate of keywords
   end
 
-  def remove_image_previously_added(flashcard_master)
-    flashcard_image = flashcard_master.flashcard_image
-    flashcard_image.remove_image!
-    flashcard_image.destroy
-  rescue ActiveRecord::RecordInvalid => e
-    render_error_response(e.message, :unprocessable_entity)
-  end
-
   def render_flashcard_common(flashcard_master, status, message)
     render json: JSON.pretty_generate({ message:,
                                         flashcard_master: flashcard_master.as_json(

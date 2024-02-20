@@ -6,6 +6,7 @@ class BaseController < ApplicationController
 
   private
 
+  # Handling exceptions section
   def handle_record_invalid(exception)
     render json: { error: exception.message }, status: :unprocessable_entity
   end
@@ -18,6 +19,7 @@ class BaseController < ApplicationController
     render json: { error: exception.message }, status: :internal_server_error
   end
 
+  # Common operations section
   def find_flashcard_master
     flashcard_master = FlashcardMaster.enabled.find_by(id: params[:id], user_id: current_user.id)
     return unless render_inaccessible_entity(flashcard_master)
@@ -25,6 +27,7 @@ class BaseController < ApplicationController
     flashcard_master
   end
 
+  # Rendering section
   def render_inaccessible_entity(flashcard_master)
     if flashcard_master.nil?
       render json: JSON.pretty_generate({ flashcard: 'Not found' }), status: :not_found
@@ -38,5 +41,14 @@ class BaseController < ApplicationController
       return false
     end
     true
+  end
+
+  # Image section
+  def remove_image_previously_added(flashcard_master)
+    flashcard_image = flashcard_master.flashcard_image
+    return unless flashcard_master.use_image == true && flashcard_image.present?
+
+    flashcard_image.remove_image!
+    flashcard_image.destroy
   end
 end

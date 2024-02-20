@@ -62,14 +62,6 @@ class Api::V1::ImagesController < BaseController
     flashcard_master.reload
   end
 
-  def remove_image_previously_added(flashcard_master)
-    flashcard_image = flashcard_master.flashcard_image
-    return unless flashcard_master.use_image == true && flashcard_image.present?
-
-    flashcard_image.remove_image!
-    flashcard_image.destroy
-  end
-
   def image_params
     params.require(:flashcard_image).permit(:image)
   end

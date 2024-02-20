@@ -1,38 +1,35 @@
 {
-    "solargraph.autoformat": true,
-    "solargraph.externalServer": {
-      "Ruby.solargraph.commandPath": "docker exec -i web-1 bundle exec solargraph",
-      "host": "localhost",
-      "port": 7658
-    },
-    "solargraph.formatting": true,
-    "emmet.triggerExpansionOnTab": true,
-    "emmet.showSuggestionsAsSnippets": true,
-    "emmet.useInlineCompletions": true,
-    "terminal.integrated.defaultProfile.windows": "Git Bash",
-    "[ruby]": {
-      "editor.defaultFormatter": "misogi.ruby-rubocop"
-    },
-    "files.eol": "\n",
+  "solargraph.externalServer": {
+    "Ruby.solargraph.commandPath": "docker exec -i web bundle exec solargraph",
+    "host": "localhost",
+    "port": 7658
+  },
+  "solargraph.transport": "external",
+  "solargraph.logLevel": "debug",
+  "solargraph.diagnostics": true,
+  "emmet.triggerExpansionOnTab": true,
+  "emmet.showSuggestionsAsSnippets": true,
+  "emmet.useInlineCompletions": true,
+  "[ruby]": {
+    "editor.defaultFormatter": "misogi.ruby-rubocop"
+  },
+  "files.eol": "\n",
+  "files.autoSave": "afterDelay",
+  "editor.formatOnSave": true,
+  "[gemfile]": {
+    "editor.defaultFormatter": "misogi.ruby-rubocop"
+  },
+  "ruby.rubocop.onSave": true,
+  "editor.minimap.enabled": false,
+  "[dockercompose]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "markdown.extension.toc.levels": "1..2",
+  "[markdown]": {
+    "editor.defaultFormatter": "yzhang.markdown-all-in-one",
+    "editor.indentSize": "tabSize",
     "files.autoSave": "afterDelay",
     "editor.formatOnSave": true,
-    "[gemfile]": {
-      "editor.defaultFormatter": "castwide.solargraph"
-    },
-    "editor.minimap.enabled": false,
-    "[dockercompose]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[jsonc]": {
-      "editor.defaultFormatter": "vscode.json-language-features"
-    },
-    "markdown.extension.toc.levels": "1..2",
-    "[markdown]": {
-      "editor.defaultFormatter": "yzhang.markdown-all-in-one",
-      "editor.indentSize": "tabSize",
-      "files.autoSave": "afterDelay",
-      "editor.formatOnSave": true,
-      "editor.formatOnPaste": true
-    }
+    "editor.formatOnPaste": true
   }
-  
+}

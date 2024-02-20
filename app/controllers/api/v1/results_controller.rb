@@ -6,8 +6,7 @@ class Api::V1::ResultsController < BaseController
     render json: JSON.pretty_generate({ flashcard_master: flashcard_master.as_json(
       only: %i[id use_image],
       include: { flashcard_definition: { only: %i[id word language] },
-                 results: { only: %i[id result updated_at] },
-                 flashcard_image: { only: %i[image] } }
+                 results: { only: %i[id result updated_at] } }
     ) }), status: :ok
   end
 
@@ -60,10 +59,7 @@ class Api::V1::ResultsController < BaseController
             answer: found_flashcard_master.flashcard_definition.answer,
             language: found_flashcard_master.flashcard_definition.language
           },
-          flashcard_image: {
-            image: found_flashcard_master.flashcard_image.try(:image)
-          },
-          latest_result: latest_result.as_json(only: %i[result updated_at])
+          latest_result: latest_result.as_json(only: %i[id result updated_at])
         }
       message = "Last result marked as: #{latest_result.result.upcase}. ID: #{found_flashcard_master.id}"
       render json: JSON.pretty_generate({ message:, flashcard_master: }), status: :ok
