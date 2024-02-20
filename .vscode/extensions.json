@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "streetsidesoftware.code-spell-checker",
+    "postman.postman-for-vscode",
+    "castwide.solargraph",
+    "vayan.haml",
+    "groksrc.ruby",
+    "shopify.ruby-lsp",
+    "hoovercj.ruby-linter",
+    "misogi.ruby-rubocop",
+    "miguel-savignano.ruby-symbols",
+    "redhat.vscode-yaml",
+  ]
+}

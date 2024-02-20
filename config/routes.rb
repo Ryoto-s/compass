@@ -1,6 +1,10 @@
-Rails.application.routes.draw do # rubocop:disable Style/FrozenStringLiteralComment,Metrics/BlockLength
+Rails.application.routes.draw do # rubocop:disable Layout/EndOfLine,Metrics/BlockLength
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   # Authenticatable routes by devise
   root 'home#index', as: 'home'
+  get '/new_home', to: 'home#new_index'
+  get '/home/:page', to: 'home#index_page'
+  get 'health', to: 'health#index'
 
   devise_for :users, path: '',
                      path_names: {
@@ -18,23 +22,26 @@ Rails.application.routes.draw do # rubocop:disable Style/FrozenStringLiteralComm
       resources :flashcards, constraints: { id: Patterns::ID_PATTERN } do
         member do
           get 'edit'
-          get 'answer'
         end
         collection do
           get 'search'
           get 'global_search'
         end
       end
-      get 'health', to: 'health#index'
       get 'current_user', to: 'current_user#index'
+      # The ImagesController identifies resources by the FlashcardMaster.
+      # IDs of the image must therefore be IDs of the FlashcardMaster.
+      resources :images, only: %i[update destroy], constraints: { id: Patterns::ID_PATTERN } do
+        member do
+          post 'create'
+        end
+      end
+      resources :results, only: %i[show], constraints: { id: Patterns::ID_PATTERN } do
+        member do
+          post 'answer'
+          get 'latest_result'
+        end
+      end
     end
   end
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get 'up' => 'rails/health#show', as: :rails_health_check
-
-  # Defines the root path route ("/")
-  # root "posts#index"
 end

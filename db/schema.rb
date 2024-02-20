@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_19_031849) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_17_175314) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -37,7 +37,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_19_031849) do
 
   create_table "flashcard_images", force: :cascade do |t|
     t.bigint "flashcard_master_id", null: false
-    t.text "image_path", null: false
+    t.text "image", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["flashcard_master_id"], name: "index_flashcard_images_on_flashcard_master_id", unique: true
@@ -46,21 +46,31 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_19_031849) do
   create_table "flashcard_masters", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.boolean "use_image", null: false
+    t.boolean "input_enabled", null: false
     t.boolean "status", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "shared_flag", default: 0, null: false
     t.index ["user_id"], name: "index_flashcard_masters_on_user_id"
+  end
+
+  create_table "registration_tokens", force: :cascade do |t|
+    t.string "token"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_registration_tokens_on_user_id"
   end
 
   create_table "results", force: :cascade do |t|
     t.bigint "flashcard_master_id", null: false
-    t.datetime "learned_at", null: false
-    t.boolean "result", null: false
+    t.bigint "user_id", null: false
+    t.integer "result", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["flashcard_master_id", "learned_at"], name: "index_results_on_flashcard_master_id_and_learned_at", unique: true
+    t.index ["flashcard_master_id", "result", "updated_at", "user_id"], name: "idx_on_flashcard_master_id_result_updated_at_user_i_60da5c37af", unique: true
     t.index ["flashcard_master_id"], name: "index_results_on_flashcard_master_id"
-    t.index ["learned_at"], name: "index_results_on_learned_at"
+    t.index ["user_id"], name: "index_results_on_user_id"
   end
 
   create_table "tag_references", force: :cascade do |t|
@@ -74,11 +84,14 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_19_031849) do
   end
 
   create_table "tags", force: :cascade do |t|
+    t.bigint "user_id", null: false
     t.string "name", null: false
     t.boolean "status", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_tags_on_name"
+    t.index ["user_id", "name"], name: "index_tags_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_tags_on_user_id"
   end
 
   create_table "user_defs", force: :cascade do |t|
@@ -122,8 +135,11 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_19_031849) do
   add_foreign_key "flashcard_definitions", "flashcard_masters"
   add_foreign_key "flashcard_images", "flashcard_masters"
   add_foreign_key "flashcard_masters", "users"
+  add_foreign_key "registration_tokens", "users"
   add_foreign_key "results", "flashcard_masters"
+  add_foreign_key "results", "users"
   add_foreign_key "tag_references", "flashcard_masters"
   add_foreign_key "tag_references", "tags"
+  add_foreign_key "tags", "users"
   add_foreign_key "user_defs", "users"
 end

@@ -1,23 +1,31 @@
-class HomeController < ActionController::API
-  before_action :authenticate_user!
-
+class HomeController < BaseController
+  # All data included
   def index
-    user_id =
-      JWT.decode(request.headers['Authorization'].split(' ')[1], ENV['SECRET_KEY_BASE']).first['sub']
-    home = FlashcardMaster.where(status: true, user_id:).limit(10)
-    response_data = home.as_json(
-      only: %i[id user_id use_image status],
-      include: {
-        flashcard_definitions: { only: %i[id word answer language] },
-        tag_references: {
-          include: {
-            tag: { only: %i[id name status] }
+    query_results = FlashcardMaster.enabled.where(user_id: current_user.id)
+    if query_results.empty?
+      render json: { message: "Data not set. UserID: #{current_user.id}" }
+    else
+      flashcard_masters = query_results.map do |q|
+        {
+          id: q.id,
+          use_image: q.use_image,
+          shared_flag: q.shared_flag,
+          input_enabled: q.input_enabled,
+          flashcard_definition: {
+            id: q.flashcard_definition.id,
+            word: q.flashcard_definition.word,
+            answer: q.flashcard_definition.answer,
+            language: q.flashcard_definition.language
           },
-          only: %i[id flashcard_master_id tag_id]
-        },
-        favourites: { only: %i[id user_id flashcard_master_id] }
-      }
-    )
-    render json: response_data
+          flashcard_image: {
+            image: q.flashcard_image.try(:image)
+          },
+          latest_result: q.latest_result.as_json(only: %i[result updated_at])
+        }
+      end
+
+      message = "Found #{flashcard_masters.size} flashcards for UserID: #{current_user.id}"
+      render json: JSON.pretty_generate({ message:, flashcard_masters: }), status: :ok
+    end
   end
 end

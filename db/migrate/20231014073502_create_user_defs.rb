@@ -1,7 +1,7 @@
 class CreateUserDefs < ActiveRecord::Migration[7.1]
   def change
     create_table :user_defs do |t|
-      t.references :user, null: false, foreign_key: true
+      t.references :user, null: false, foreign_key: true, index: true
       t.string :first_name, null: false
       t.string :sur_name, null: false
       t.string :first_phonetic
