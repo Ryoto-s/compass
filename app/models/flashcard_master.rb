@@ -1,9 +1,9 @@
 class FlashcardMaster < ApplicationRecord
   belongs_to :user
-  has_one :flashcard_definition
-  has_many :results
-  has_many :favourites
-  has_one :flashcard_image
+  has_one :flashcard_definition, dependent: :destroy
+  has_many :results, dependent: :destroy
+  has_many :favourites, dependent: :destroy
+  has_one :flashcard_image, dependent: :destroy
   has_many :tag_references
   has_many :tags, through: :tag_references
 

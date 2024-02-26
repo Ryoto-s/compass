@@ -1,11 +1,10 @@
 {
   "solargraph.externalServer": {
-    "Ruby.solargraph.commandPath": "docker exec -i web bundle exec solargraph",
     "host": "localhost",
     "port": 7658
   },
-  "solargraph.transport": "external",
   "solargraph.logLevel": "debug",
+  "solargraph.definitions": true,
   "solargraph.diagnostics": true,
   "emmet.triggerExpansionOnTab": true,
   "emmet.showSuggestionsAsSnippets": true,
@@ -15,6 +14,8 @@
   },
   "files.eol": "\n",
   "files.autoSave": "afterDelay",
+  "files.insertFinalNewline": true,
+  "editor.indentSize": "tabSize",
   "editor.formatOnSave": true,
   "[gemfile]": {
     "editor.defaultFormatter": "misogi.ruby-rubocop"

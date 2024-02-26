@@ -7,6 +7,6 @@ class User < ApplicationRecord
   self.skip_session_storage = %i[http_auth params_auth]
 
   has_many :flashcard_masters
-  has_many :favourites
-  has_one :user_def
+  has_many :favourites, dependent: :destroy
+  has_one :user_def, dependent: :destroy
 end

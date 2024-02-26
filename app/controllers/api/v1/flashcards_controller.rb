@@ -56,13 +56,6 @@ class Api::V1::FlashcardsController < BaseController
     end
   end
 
-  def edit
-    flashcard_master = find_flashcard_master
-    return unless flashcard_master
-
-    render_flashcard_common(flashcard_master, :ok, 'Flashcard for edit retrieved')
-  end
-
   def update
     flashcard_master = find_flashcard_master
     return unless flashcard_master

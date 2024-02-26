@@ -125,15 +125,7 @@ curl -X GET -H "Content-Type: application/json"\
 
 ### Update flashcard
 
-- At first, get flashcard data for edit
-
-```
-curl -X GET -H "Content-Type: application/json"\
- -H "Authorization: Bearer ----Input issued token----"\
- localhost:3000/api/v1/flashcards/1/edit
-```
-
-- And command for update with putting returned data:
+- Update with putting returned data from found:
 
 ```
 curl -X PATCH -H "Content-Type: application/json"\

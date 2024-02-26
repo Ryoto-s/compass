@@ -20,17 +20,11 @@ Rails.application.routes.draw do # rubocop:disable Layout/EndOfLine,Metrics/Bloc
   namespace :api, format: 'json' do
     namespace :v1 do
       resources :flashcards, constraints: { id: Patterns::ID_PATTERN } do
-        member do
-          get 'edit'
-        end
         collection do
           get 'search'
           get 'global_search'
         end
       end
-      get 'current_user', to: 'current_user#index'
-      # The ImagesController identifies resources by the FlashcardMaster.
-      # IDs of the image must therefore be IDs of the FlashcardMaster.
       resources :images, only: %i[update destroy], constraints: { id: Patterns::ID_PATTERN } do
         member do
           post 'create'
@@ -42,6 +36,13 @@ Rails.application.routes.draw do # rubocop:disable Layout/EndOfLine,Metrics/Bloc
           get 'latest_result'
         end
       end
+      resources :favourites, only: %i[destroy] do
+        member do
+          post 'create'
+        end
+      end
     end
   end
+  # Handle invalid request URL
+  match '*unmatched', to: 'not_found#handle_routing_error', via: :all
 end
