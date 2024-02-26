@@ -49,18 +49,13 @@ class Api::V1::FlashcardsController < BaseController
   def create
     ActiveRecord::Base.transaction do
       flashcard_master = FlashcardMaster.create!(master_params.merge(user_id: current_user.id, status: true))
-      render json: JSON.pretty_generate({ flashcard_master: flashcard_master.as_json(
-        only: %i[id user_id use_image input_enabled shared_flag status],
-        include: { flashcard_definition: { only: %i[id word answer language] } }
-      ) }), status: :created
+      message = 'Flashcard successfully added.'
+      render json: JSON.pretty_generate({ message:,
+                                          flashcard_master: flashcard_master.as_json(
+                                            only: %i[id user_id use_image input_enabled shared_flag status],
+                                            include: { flashcard_definition: { only: %i[id word answer language] } }
+                                          ) }), status: :created
     end
-  end
-
-  def edit
-    flashcard_master = find_flashcard_master
-    return unless flashcard_master
-
-    render_flashcard_common(flashcard_master, :ok, 'Flashcard for edit retrieved')
   end
 
   def update
@@ -91,7 +86,7 @@ class Api::V1::FlashcardsController < BaseController
 
       flashcard_master.update(status: false)
       render_deleted_flashcard(flashcard_master, :ok,
-                               "successfully deleted flashcard. ID: #{flashcard_master.id}, word: #{flashcard_master.flashcard_definition.word}")
+                               "Flashcard successfully deleted. ID: #{flashcard_master.id}, word: #{flashcard_master.flashcard_definition.word}")
     end
   end
 

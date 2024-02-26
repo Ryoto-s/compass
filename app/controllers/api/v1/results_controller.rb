@@ -89,7 +89,7 @@ class Api::V1::ResultsController < BaseController
   def process_input_disabled_flashcard(flashcard_master, word)
     # To put param such as correct, incorrect, intermediate, and not_sure by answerer's self
     result = Result.create!(result_params.merge(flashcard_master_id: params[:id], user_id: current_user.id))
-    message = "Answer successfully registered, mark as: '#{params[:results][:result]}'! word: #{word}"
+    message = "Answer successfully added, mark as: '#{params[:results][:result]}'! word: #{word}"
     render_result(flashcard_master, result, message, :created)
   end
 
