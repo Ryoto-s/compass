@@ -9,7 +9,7 @@ class Api::V1::FavouritesController < BaseController
       render json: JSON.pretty_generate({ message:,
                                           favourite: found_favourite.as_json(only: %i[id flashcard_master_id
                                                                                       user_id]) }),
-             status: :bad_request
+             status: :conflict
       return
     end
 
@@ -32,12 +32,12 @@ class Api::V1::FavouritesController < BaseController
     if favourite.nil?
       message = "Favourites not found. ID: #{params[:id]}"
       render json: JSON.pretty_generate({ message:,
-                                          favourite: }), status: :bad_request
+                                          favourite: }), status: :conflict
       return
     end
     ActiveRecord::Base.transaction do
       favourite.destroy!
-      message = "Favourite removed. ID: #{flashcard_master.id}"
+      message = "Favourite successfully deleted. ID: #{flashcard_master.id}"
       render json: JSON.pretty_generate({ message:, favourite: {
                                           id: favourite.id,
                                           flashcard_master_id: flashcard_master.id,

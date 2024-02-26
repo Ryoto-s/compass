@@ -15,7 +15,6 @@
   "files.eol": "\n",
   "files.autoSave": "afterDelay",
   "files.insertFinalNewline": true,
-  "editor.indentSize": "tabSize",
   "editor.formatOnSave": true,
   "[gemfile]": {
     "editor.defaultFormatter": "misogi.ruby-rubocop"

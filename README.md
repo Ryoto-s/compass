@@ -125,7 +125,7 @@ curl -X GET -H "Content-Type: application/json"\
 
 ### Update flashcard
 
-- Update with putting returned data from found:
+- When updating, modify the retrieved flashcard data and then execute the command as follows:
 
 ```
 curl -X PATCH -H "Content-Type: application/json"\
