@@ -1,6 +1,6 @@
-class Api::V1::ResultsController < BaseController
+class Api::V1::ResultsController < FlashcardAttributesController
   def show
-    flashcard_master = find_flashcard_master
+    flashcard_master = find_attributes_flashcard
     return unless flashcard_master
 
     render json: JSON.pretty_generate({ flashcard_master: flashcard_master.as_json(
@@ -12,7 +12,7 @@ class Api::V1::ResultsController < BaseController
 
   def answer
     ActiveRecord::Base.transaction do
-      flashcard_master = find_flashcard_master
+      flashcard_master = find_attributes_flashcard
       return unless flashcard_master
 
       flashcard_definition = flashcard_master.flashcard_definition
@@ -28,10 +28,10 @@ class Api::V1::ResultsController < BaseController
   # Update marked status 0f result
   def update
     ActiveRecord::Base.transaction do
-      flashcard_master = find_flashcard_master
+      flashcard_master = find_attributes_flashcard
       return unless flashcard_master
 
-      result = Result.find_by(id: params[:result_id], flashcard_master_id: params[:id])
+      result = flashcard_master.latest_result
       result.update!(result_params)
       flashcard_master.reload
       word = flashcard_master.flashcard_definition.word
@@ -41,7 +41,7 @@ class Api::V1::ResultsController < BaseController
   end
 
   def latest_result
-    found_flashcard_master = find_flashcard_master
+    found_flashcard_master = find_attributes_flashcard
     return unless found_flashcard_master
 
     latest_result = found_flashcard_master.latest_result
@@ -61,7 +61,7 @@ class Api::V1::ResultsController < BaseController
           },
           latest_result: latest_result.as_json(only: %i[id result updated_at])
         }
-      message = "Last result marked as: #{latest_result.result.upcase}. ID: #{found_flashcard_master.id}"
+      message = "Latest result marked as: #{latest_result.result.upcase}. ID: #{found_flashcard_master.id}"
       render json: JSON.pretty_generate({ message:, flashcard_master: }), status: :ok
     end
   end
@@ -81,14 +81,15 @@ class Api::V1::ResultsController < BaseController
       answer_result = :incorrect
       message = "Incorrect answer! word: #{word}"
     end
-    result = Result.create!(result: answer_result, flashcard_master_id: params[:id],
-                            user_id: current_user.id)
+    result = flashcard_master.results
+                             .create!(result: answer_result, user_id: current_user.id)
     render_result(flashcard_master, result, message, :created)
   end
 
   def process_input_disabled_flashcard(flashcard_master, word)
     # To put param such as correct, incorrect, intermediate, and not_sure by answerer's self
-    result = Result.create!(result_params.merge(flashcard_master_id: params[:id], user_id: current_user.id))
+    result = flashcard_master.results
+                             .create!(result_params.merge(user_id: current_user.id))
     message = "Answer successfully added, mark as: '#{params[:results][:result]}'! word: #{word}"
     render_result(flashcard_master, result, message, :created)
   end
@@ -109,7 +110,6 @@ class Api::V1::ResultsController < BaseController
                                         flashcard_master: flashcard_master.as_json(
                                           only: %i[id input_enabled],
                                           include: { flashcard_definition: { only: %i[id word answer language] },
-                                                     flashcard_image: { only: %i[image] },
                                                      results: { only: %i[result updated_at] } }
                                         ) }), status:
   end

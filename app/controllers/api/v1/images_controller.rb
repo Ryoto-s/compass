@@ -1,8 +1,8 @@
-class Api::V1::ImagesController < BaseController
+class Api::V1::ImagesController < FlashcardAttributesController
   # Access POST: /api/v1/images/:id/create to identify flashcard_master by ID
   def create
     ActiveRecord::Base.transaction do
-      flashcard_master_for_create = find_flashcard_master
+      flashcard_master_for_create = find_attributes_flashcard
       return unless flashcard_master_for_create
 
       word = flashcard_master_for_create.flashcard_definition.word
@@ -21,7 +21,7 @@ class Api::V1::ImagesController < BaseController
   # Access PATCH: /api/v1/images/:id to identify flashcard_master by ID
   def update
     ActiveRecord::Base.transaction do
-      flashcard_master = find_flashcard_master
+      flashcard_master = find_attributes_flashcard
       return unless flashcard_master
 
       word = flashcard_master.flashcard_definition.word
@@ -39,7 +39,7 @@ class Api::V1::ImagesController < BaseController
 
   def destroy
     ActiveRecord::Base.transaction do
-      flashcard_master = find_flashcard_master
+      flashcard_master = find_attributes_flashcard
       return unless flashcard_master
 
       word = flashcard_master.flashcard_definition.word
