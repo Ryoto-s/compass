@@ -24,22 +24,14 @@ Rails.application.routes.draw do # rubocop:disable Layout/EndOfLine,Metrics/Bloc
           get 'search'
           get 'global_search'
         end
-      end
-      resources :images, only: %i[update destroy], constraints: { id: Patterns::ID_PATTERN } do
-        member do
-          post 'create'
+        resource :images, only: %i[create update destroy]
+        resource :results, only: %i[show update] do
+          collection do
+            post 'answer'
+            get 'latest_result'
+          end
         end
-      end
-      resources :results, only: %i[show], constraints: { id: Patterns::ID_PATTERN } do
-        member do
-          post 'answer'
-          get 'latest_result'
-        end
-      end
-      resources :favourites, only: %i[destroy] do
-        member do
-          post 'create'
-        end
+        resource :favourites, only: %i[create destroy]
       end
     end
   end

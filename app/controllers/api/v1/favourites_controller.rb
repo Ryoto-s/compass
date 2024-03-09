@@ -1,11 +1,11 @@
-class Api::V1::FavouritesController < BaseController
+class Api::V1::FavouritesController < FlashcardAttributesController
   def create
-    flashcard_master = find_flashcard_master
+    flashcard_master = find_attributes_flashcard
     return unless flashcard_master
 
-    found_favourite = Favourite.find_by(flashcard_master_id: params[:id], user_id: current_user.id)
+    found_favourite = flashcard_master.favourites
     if found_favourite.present?
-      message = "Favourite already added. ID: #{params[:id]}"
+      message = "Favourite already added. ID: #{params[:flashcard_id]}"
       render json: JSON.pretty_generate({ message:,
                                           favourite: found_favourite.as_json(only: %i[id flashcard_master_id
                                                                                       user_id]) }),
@@ -15,8 +15,8 @@ class Api::V1::FavouritesController < BaseController
 
     ActiveRecord::Base.transaction do
       favourite =
-        Favourite.create!({ user_id: current_user.id, flashcard_master_id: params[:id] })
-      message = "Favourite successfully added. ID: #{params[:id]}"
+        Favourite.create!({ user_id: current_user.id, flashcard_master_id: params[:flashcard_id] })
+      message = "Favourite successfully added. ID: #{params[:flashcard_id]}"
       render json: JSON.pretty_generate(message:, favourite: favourite.as_json(
         only: %i[id flashcard_master_id user_id]
       )), status: :ok
@@ -24,13 +24,13 @@ class Api::V1::FavouritesController < BaseController
   end
 
   def destroy
-    flashcard_master = find_flashcard_master
+    flashcard_master = find_attributes_flashcard
     return unless flashcard_master
 
     favourite = flashcard_master.favourites.first
 
     if favourite.nil?
-      message = "Favourites not found. ID: #{params[:id]}"
+      message = "Favourites not found. ID: #{params[:flashcard_id]}"
       render json: JSON.pretty_generate({ message:,
                                           favourite: }), status: :conflict
       return

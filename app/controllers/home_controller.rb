@@ -14,7 +14,7 @@ class HomeController < BaseController
         # Flashcard can be shared with other users, hence it can be associated with multiple favourites,
         # creating a many-to-many relationship defined by a unique combination of user_id and flashcard_master_id.
         # Here, since favourites are filtered by user_id, retrieve only the first favourite record.
-        favourite = q.favourites.first
+        favourite = q.favourites.first || Favourite.new
         {
           id: q.id,
           use_image: q.use_image,
@@ -29,17 +29,13 @@ class HomeController < BaseController
           flashcard_image: {
             image: q.flashcard_image.try(:image)
           },
-          favourite: {
-            id: favourite.id,
-            flashcard_master_id: favourite.flashcard_master_id,
-            user_id: favourite.user_id
-          },
+          favourite: favourite.as_json(only: %i[id flashcard_master_id user_id]),
           latest_result: q.latest_result.as_json(only: %i[result updated_at])
         }
       end
 
       message = "Found #{flashcard_masters.size} flashcards for UserID: #{current_user.id}"
-      render json: JSON.pretty_generate({ message:, flashcard_masters: }), status: :ok
+      render json: JSON.pretty_generate({ message:, flashcard_masters: flashcard_masters.as_json }), status: :ok
     end
   end
 end

@@ -14,6 +14,7 @@ A flashcard app for learning by rails API mode.
   - [4.2. Other operations for flashcard](#42-other-operations-for-flashcard)
   - [4.3. Operate images](#43-operate-images)
   - [4.4. Answer to flashcard](#44-answer-to-flashcard)
+  - [4.5. Add favourite](#45-add-favourite)
 
 # 1. The App Explanation
 
@@ -180,7 +181,7 @@ curl -X GET -H "Content-Type: application/json"\
 curl -X POST \
  -H "Authorization: Bearer ----Input issued token----"\
  -F "flashcard_image[image]=@path/to/image"
- localhost:3000/api/v1/images/3/create
+ localhost:3000/api/v1/flashcards/1/images
 ```
 
 > [!Important]
@@ -193,7 +194,7 @@ curl -X POST \
 curl -X PATCH \
  -H "Authorization: Bearer ----Input issued token----"\
  -F "flashcard_image[image]=@path/to/image"
- localhost:3000/api/v1/images/3
+ localhost:3000/api/v1/flashcards/1/images
 ```
 
 - Also image can be deleted by command as follows:
@@ -201,12 +202,12 @@ curl -X PATCH \
 ```
 curl -X DELETE \
  -H "Authorization: Bearer ----Input issued token----"\
- localhost:3000/api/v1/images/3
+ localhost:3000/api/v1/flashcards/3/images
 ```
 
 ## 4.4. Answer to flashcard
 
-- There are two ways to answering flashcard depend on input_enabled value
+- There are two ways to answering flashcard depend on value of `input_enabled`
   - true: Compare input value and answer value
   - false: Choose from 'correct', 'intermediate', 'incorrect', and 'not_sure' to mark answer status
 
@@ -216,7 +217,7 @@ curl -X DELETE \
 curl -X POST -H "Content-Type: application/json"\
  -H "Authorization: Bearer ----Input issued token----"\
  -d '{"answer": "input value of answer" }'\
- localhost:3000/api/v1/results/1/create
+ localhost:3000/api/v1/flashcards/1/results/answer
 ```
 
 > [!Tip]
@@ -228,7 +229,7 @@ curl -X POST -H "Content-Type: application/json"\
 curl -X POST -H "Content-Type: application/json"\
  -H "Authorization: Bearer ----Input issued token----"\
  -d '{"results": {"result": "correct" } }'\
- localhost:3000/api/v1/results/1/answer
+ localhost:3000/api/v1/flashcards/1/results/answer
 ```
 
 > [!Important]
@@ -239,5 +240,23 @@ curl -X POST -H "Content-Type: application/json"\
 ```
 curl -X GET -H "Content-Type: application/json"\
  -H "Authorization: Bearer ----Input issued token----"\
- localhost:3000/api/v1/results/1/latest_result
+ localhost:3000/api/v1/flashcards/1/results/latest_result
+```
+
+## 4.5. Add favourite
+
+- You can put favourite to flashcard:
+
+```
+curl -X POST \
+ -H "Authorization: Bearer ----Input issued token----"\
+ localhost:3000/api/v1/flashcards/1/favourites
+```
+
+- And delete favourite from flashcard:
+
+```
+curl -X DELETE \
+ -H "Authorization: Bearer ----Input issued token----"\
+ localhost:3000/api/v1/flashcards/1/favourites
 ```
